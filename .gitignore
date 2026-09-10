@@ -1,0 +1,25 @@
+# --- Secrets: NEVER commit ---
+.env
+*.env
+.env.*
+
+# --- Python environment ---
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Large data: don't version the raw dataset ---
+Gift_Cards.jsonl.gz
+*.jsonl.gz
+
+# --- Runtime outputs / caches ---
+batch_scores.csv
+batch_samples.txt
+*.sqlite
+*.sqlite3
+*.log
+
+# --- macOS ---
+.DS_Store
