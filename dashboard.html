@@ -3,134 +3,165 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Amazon Review Sentiment — Three-Class Report</title>
+<title>Amazon Review Sentiment Model</title>
 <style>
 /* ============================================================
-   THEME TOKENS — recolor the whole report by editing these.
+   THEME TOKENS — recolor the whole interface by editing these.
    ============================================================ */
 :root{
-  --bg:#f5f3ee; --surface:#ffffff; --surface-2:#fbfaf7;
-  --ink:#1c1a17; --ink-strong:#000000; --ink-muted:#6b675f; --ink-faint:#9b968c;
-  --line:#e6e2d8; --line-strong:#d5d0c2;
-  --accent:#c8512c; --accent-ink:#ffffff; --accent-soft:#f6e3da;
-  --pos:#4a7c4a; --pos-soft:#e6efe6;
-  --neu:#b08a52; --neu-soft:#f2e9da;      /* neutral — amber/khaki */
-  --neg:#a5442f; --neg-soft:#f6e3de;
-  --warn:#b8862b; --warn-soft:#f5ecdb;
+  --bg:#f4f2ec; --surface:#ffffff; --surface-2:#faf8f3;
+  --ink:#231f1a; --ink-strong:#0f0d0a; --ink-muted:#6f6a5f; --ink-faint:#a39d90;
+  --line:#e7e2d6; --line-strong:#d6d0c0;
+  --accent:#c8512c; --accent-ink:#fff; --accent-soft:#f7e6de;
+  --pos:#3f7a43; --pos-soft:#e7f0e6;
+  --neu:#a3813f; --neu-soft:#f3ead7;
+  --neg:#a23c28; --neg-soft:#f6e4de;
+  --warn:#b8862b; --warn-soft:#f4ead6;
   --font-sans:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
   --font-mono:"SF Mono","Menlo","Consolas",monospace;
   --r-sm:6px; --r-md:10px; --r-lg:14px;
-  --shadow:0 1px 2px rgba(28,26,22,.05),0 8px 24px rgba(28,26,22,.05);
+  --shadow:0 1px 2px rgba(35,31,26,.05),0 10px 28px rgba(35,31,26,.06);
 }
 html[data-theme="dark"]{
-  --bg:#17150f; --surface:#201d16; --surface-2:#262219;
-  --ink:#eae6dc; --ink-strong:#ffffff; --ink-muted:#a29c8e; --ink-faint:#6f6a5e;
-  --line:#3a362b; --line-strong:#4a4538;
-  --accent:#df7a52; --accent-ink:#16130e; --accent-soft:#3a241a;
-  --pos:#7fae7f; --pos-soft:#243220; --neu:#cba568; --neu-soft:#372d1d;
-  --neg:#d07a62; --neg-soft:#3c221b; --warn:#cfaa63; --warn-soft:#372f1c;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  --bg:#16140f; --surface:#201d16; --surface-2:#282319;
+  --ink:#eae5da; --ink-strong:#fff; --ink-muted:#a39d8e; --ink-faint:#6e685c;
+  --line:#3b362a; --line-strong:#4b4536;
+  --accent:#dc7a52; --accent-ink:#14100c; --accent-soft:#3a251b;
+  --pos:#7fb17f; --pos-soft:#243220; --neu:#cba568; --neu-soft:#372d1d;
+  --neg:#cf7961; --neg-soft:#3c221b; --warn:#cfa963; --warn-soft:#372f1c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1080px;margin:0 auto;padding:40px 28px 80px}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:36px 28px 72px}
 
-.masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:30px}
-.masthead .kicker{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:8px}
-h1{margin:0;font-size:27px;line-height:1.12;letter-spacing:-.01em;color:var(--ink-strong)}
-.sub{color:var(--ink-muted);margin-top:8px;font-size:13.5px}
-.meta{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);text-align:right;line-height:1.7;white-space:nowrap}
-.meta b{color:var(--ink-muted);font-weight:600}
-.recolor{padding:6px 10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:var(--r-sm);font-family:var(--font-sans);font-size:12px;cursor:pointer;margin-top:8px}
+/* ---- Header ---- */
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.masthead .kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:7px}
+h1{margin:0;font-size:26px;line-height:1.12;letter-spacing:-.01em;color:var(--ink-strong)}
+.sub{color:var(--ink-muted);margin-top:7px;font-size:13.5px;max-width:60ch}
+.meta{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.8;white-space:nowrap}
+.meta b{color:var(--ink-muted)}
+.recolor{margin-top:8px;padding:5px 10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:var(--r-sm);font:inherit;font-size:11.5px;cursor:pointer}
 .recolor:hover{border-color:var(--accent);color:var(--accent)}
 
-.headline{display:grid;grid-template-columns:240px 1fr;gap:26px;align-items:stretch;margin-bottom:26px}
-.bigstat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:24px 26px;display:flex;flex-direction:column;justify-content:center}
-.bigstat .value{font-size:58px;font-weight:700;letter-spacing:-.03em;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
-.bigstat .num{font-size:22px;color:var(--ink-strong);margin-top:2px}
-.bigstat .cap{font-size:12.5px;color:var(--ink-muted);margin-top:10px;max-width:210px;line-height:1.4}
-.headline .verdict{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px 24px;display:flex;flex-direction:column;justify-content:center}
-.headline .verdict h2{margin:0 0 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);font-weight:600}
-.headline .verdict p{margin:0 0 8px;font-size:14.5px;color:var(--ink)}
-.headline .verdict p:last-child{margin-bottom:0}
+/* ---- Tabs ---- */
+.tabs{display:flex;gap:4px;margin:18px 0 22px;border-bottom:1px solid var(--line)}
+.tabbtn{border:none;background:transparent;color:var(--ink-muted);font:inherit;font-size:14px;font-weight:600;padding:11px 18px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;opacity:.75;transition:opacity .12s}
+.tabbtn:hover{opacity:1;color:var(--ink)}
+.tabbtn.active{color:var(--accent);border-bottom-color:var(--accent);opacity:1}
+.tabpanel{display:none}
+.tabpanel.active{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 18px 16px;box-shadow:var(--shadow)}
-.kpi .label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-bottom:8px}
-.kpi .num{font-size:26px;font-weight:700;color:var(--ink-strong);line-height:1;font-variant-numeric:tabular-nums}
-.kpi .num small{font-size:14px;color:var(--ink-muted);font-weight:600}
-.kpi .hint{font-size:12px;color:var(--ink-muted);margin-top:7px}
+/* ---- KPIs / headline ---- */
+.headline{display:grid;grid-template-columns:250px 1fr;gap:24px;margin-bottom:24px}
+.bigstat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:24px 26px;display:flex;flex-direction:column;justify-content:center}
+.bigstat .value{font-size:56px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:var(--accent)}
+.bigstat .num{font-size:20px;color:var(--ink-strong);margin-top:2px}
+.bigstat .cap{font-size:12.5px;color:var(--ink-muted);margin-top:10px;max-width:220px;line-height:1.4}
+.lede{display:flex;flex-direction:column;justify-content:center;gap:10px}
+.lede h2{margin:0;font-size:16px;color:var(--ink-strong)}
+.lede p{margin:0;font-size:14px;color:var(--ink-muted)}
+.lede p b{color:var(--ink)}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 16px 14px;box-shadow:var(--shadow)}
+.kpi .label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-bottom:7px}
+.kpi .num{font-size:25px;font-weight:700;color:var(--ink-strong);line-height:1;font-variant-numeric:tabular-nums}
+.kpi .num small{font-size:13px;color:var(--ink-muted)}
+.kpi .hint{font-size:11.5px;color:var(--ink-muted);margin-top:6px}
 .kpi.pos .num{color:var(--pos)} .kpi.neu .num{color:var(--neu)} .kpi.neg .num{color:var(--neg)} .kpi.warn .num{color:var(--warn)}
 
-section{margin-bottom:38px}
-.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+/* ---- Section headers ---- */
+section{margin-bottom:8px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
 .sec-head h2{margin:0;font-size:16px;color:var(--ink-strong);letter-spacing:-.01em}
 .sec-head .n{font-family:var(--font-mono);color:var(--ink-faint);font-size:12px}
-.sec-sub{color:var(--ink-muted);font-size:13px;margin:-6px 0 16px;max-width:74ch}
+.sec-sub{color:var(--ink-muted);font-size:13.5px;margin:-4px 0 16px;max-width:74ch}
 
-/* confusion matrix (3x3) */
+/* ---- Teaching card ---- */
+.teach{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px 24px;margin-bottom:24px}
+.teach h3{margin:0 0 12px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.teach .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.teach h4{margin:0 0 6px;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint)}
+.teach ul{margin:0;padding-left:2px;list-style:none;font-size:13.5px}
+.teach li{margin-bottom:7px;color:var(--ink-muted)}
+.teach .lab{display:inline-block;width:86px;font-weight:600}
+.teach .lab.po{color:var(--pos)} .teach .lab.ne{color:var(--neu)} .teach .lab.ng{color:var(--neg)}
+.teach .cm-hint{margin-top:14px;font-size:12.5px;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:12px}
+
+/* ---- Confusion matrix ---- */
 .cmatrix{display:grid;grid-template-columns:auto auto auto auto;gap:10px;align-items:center;justify-content:start}
-.cm-label{font-size:12px;color:var(--ink-muted);align-self:end;padding-bottom:6px}
-.cm-label.right{text-align:right;padding-right:4px}
-.cm-cell{border-radius:var(--r-md);padding:14px 18px;text-align:center;min-width:132px}
-.cm-cell .v{font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
-.cm-cell .d{font-size:11px;margin-top:6px;opacity:.85}
-.cm-diag{background:var(--pos-soft);color:var(--pos);border:1px solid transparent}
-.cm-off{background:var(--neg-soft);color:var(--neg);border:1px solid transparent}
+.cm-colhdr{font-size:11.5px;color:var(--ink-muted);text-align:center;font-weight:600;padding-bottom:2px}
+.cm-cell{border-radius:var(--r-md);padding:14px 18px;text-align:center;min-width:128px}
+.cm-cell .v{font-size:29px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.cm-cell .d{font-size:11px;margin-top:5px;opacity:.85}
+.cm-diag{background:var(--pos-soft);color:var(--pos)}
+.cm-off{background:var(--neg-soft);color:var(--neg)}
 .cm-rowlab{font-size:11.5px;color:var(--ink-muted);font-weight:600;align-self:center;white-space:nowrap}
-.cm-colhdr{font-size:11.5px;color:var(--ink-muted);text-align:center;font-weight:600}
-.cm-legend{grid-column:1/5;margin-top:6px;color:var(--ink-muted);font-size:12px;display:flex;gap:18px;flex-wrap:wrap}
+.cm-legend{grid-column:1/5;margin-top:8px;color:var(--ink-muted);font-size:12px;display:flex;gap:18px;flex-wrap:wrap}
 .cm-legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:1px}
 .cm-legend .l-pos:before{background:var(--pos)} .cm-legend .l-neu:before{background:var(--neu)} .cm-legend .l-neg:before{background:var(--neg)}
 
-.classlines{display:flex;flex-direction:column;gap:18px}
+/* ---- Class accuracy bars ---- */
+.classlines{display:flex;flex-direction:column;gap:16px}
 .cl-row{display:grid;grid-template-columns:120px 1fr 130px;align-items:center;gap:14px}
 .cl-name{font-weight:600;color:var(--ink)} .cl-name small{display:block;font-weight:400;color:var(--ink-faint);font-size:11.5px}
-.cl-track{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;height:22px;overflow:hidden}
+.cl-track{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;height:20px;overflow:hidden}
 .cl-fill{height:100%;border-radius:999px}
 .cl-fill.pos{background:var(--pos)} .cl-fill.neu{background:var(--neu)} .cl-fill.neg{background:var(--neg)}
 .cl-stats{text-align:right;font-variant-numeric:tabular-nums}
 .cl-stats .pc{font-weight:700;color:var(--ink-strong)}
 .cl-stats .n{color:var(--ink-muted);font-size:12px}
 
-/* callouts */
-.callout{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px}
-.callout h3{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
-.callout p{margin:0;font-size:13.5px;color:var(--ink)}
-.callout .big{font-size:20px;font-weight:700;color:var(--ink-strong);margin-top:6px}
-.callout.warn{background:var(--warn-soft);border-color:rgba(184,134,43,.35)}
-.callout.warn h3{color:var(--warn)}
-.callout.crit{background:var(--neg-soft);border-left:3px solid var(--neg)}
-.callout.crit h3{color:var(--neg)}
+/* ---- Callout / observation ---- */
+.observe{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px}
+.observe h3{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.observe p{margin:0;font-size:13.5px;color:var(--ink)}
+.observe .big{font-size:19px;font-weight:700;color:var(--ink-strong);margin-top:6px}
+.observe.hl{background:var(--accent-soft);border-color:rgba(200,81,44,.25)}
+.observe.hl h3{color:var(--accent)}
+.observe.warn{background:var(--warn-soft);border-color:rgba(184,134,43,.35)}
+.observe.warn h3{color:var(--warn)}
 
-/* ===== Descriptive visualization layer ===== */
-.descgrid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:26px}
-.descpanel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px 24px}
+/* --- error cards --- */
+.errs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.errcard{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--neg);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow)}
+.errcard .tag{font-family:var(--font-mono);font-size:11px;color:var(--neg);margin-bottom:7px}
+.errcard h3{margin:0 0 4px;font-size:14px;color:var(--ink-strong)}
+.errcard .rating{font-size:12px;color:var(--ink-muted);margin-bottom:9px}
+.errcard blockquote{margin:0;color:var(--ink-muted);font-size:13px;line-height:1.5;border-left:2px solid var(--line-strong);padding-left:12px}
+.errcard .why{margin-top:11px;font-size:12px;color:var(--ink-muted)}
+.errcard .why b{color:var(--ink)}
+
+/* ---- Desc panels ---- */
+.descgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.descpanel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px 22px}
 .descpanel h3{margin:0 0 4px;font-size:14px;color:var(--ink-strong)}
-.descpanel .sub{color:var(--ink-muted);font-size:12.5px;margin:0 0 16px}
-.desc-lbl{font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:16px 0 6px}
-.starhist{display:flex;align-items:flex-end;gap:18px;height:150px}
-.starhist .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.descpanel .sub{color:var(--ink-muted);font-size:12.5px;margin:0 0 14px}
+.desc-lbl{font-size:12px;color:var(--ink-muted);margin-top:14px;line-height:1.45;border-top:1px dashed var(--line);padding-top:10px}
+.desc-lbl b{color:var(--ink)}
+.starhist{display:flex;align-items:flex-end;gap:16px;height:145px}
+.starhist .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
 .starhist .bar i{display:block;width:100%;background:var(--accent);border-radius:6px 6px 0 0;min-height:3px}
-.starhist .bar .st{font-size:13px;color:var(--warn);letter-spacing:.5px}
+.starhist .bar .st{font-size:12.5px;color:var(--warn);letter-spacing:.5px}
 .starhist .bar .cnt{font-size:12px;color:var(--ink-muted);font-weight:600;font-variant-numeric:tabular-nums}
-.starhist .bar .s0{color:var(--ink-faint)}
-.tvp .row{display:grid;grid-template-columns:76px 1fr auto 1fr 44px;gap:10px;align-items:center;margin-bottom:16px}
+.tvp .row{display:grid;grid-template-columns:72px 1fr auto 1fr 42px;gap:10px;align-items:center;margin-bottom:15px}
 .tvp .row .name{font-weight:700;color:var(--ink-strong);font-size:13px}
-.tvp .row .axislab{font-size:10.5px;color:var(--ink-faint);text-align:center}
-.tvp .track{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;height:18px;overflow:hidden}
+.tvp .track{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;height:17px;overflow:hidden}
 .tvp .track .fill{height:100%;border-radius:999px}
 .tvp .fill.true-pos{background:var(--pos)} .tvp .fill.true-neu{background:var(--neu)} .tvp .fill.true-neg{background:var(--neg)}
-.tvp .track.pred{opacity:.55}
-.tvp .num{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--ink-muted);text-align:right}
-.tvp .num b{color:var(--ink-strong);font-size:14px}
-.tvp legend{display:flex;gap:18px;font-size:11.5px;color:var(--ink-muted);margin-top:6px}
+.tvp .track.pred .fill{opacity:.5}
+.tvp .num{font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-muted);text-align:right}
+.tvp .num b{color:var(--ink-strong);font-size:13.5px}
+.tvp legend{display:flex;gap:18px;font-size:11.5px;color:var(--ink-muted);margin-top:4px}
 .tvp legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:0}
 .tvp legend .l-t:before{background:var(--accent)}
-.tvp legend .l-p:before{background:var(--ink-muted);opacity:.55}
-.recall{display:flex;flex-direction:column;gap:14px}
-.recall .r{display:grid;grid-template-columns:120px 1fr 90px;align-items:center;gap:12px}
+.tvp legend .l-p:before{background:var(--ink-muted);opacity:.5}
+.recall{display:flex;flex-direction:column;gap:13px}
+.recall .r{display:grid;grid-template-columns:120px 1fr 92px;align-items:center;gap:12px}
 .recall .r .name{font-weight:600;color:var(--ink);font-size:13px}
 .recall .stack{display:flex;height:20px;border-radius:6px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
 .recall .stack .ok{background:var(--pos)}
@@ -138,61 +169,40 @@ section{margin-bottom:38px}
 .recall .stack.neu-bad .bad{background:var(--neu)}
 .recall .meta{font-size:11.5px;color:var(--ink-muted);text-align:right;font-variant-numeric:tabular-nums}
 .recall .meta b{color:var(--ink-strong)}
-@media(max-width:880px){.descgrid{grid-template-columns:1fr}.tvp .row{grid-template-columns:60px 1fr 34px}}
 
-/* comparison table */
-.cmprec{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:6px}
-.cmp{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow)}
-.cmp h3{margin:0 0 4px;font-size:14px;color:var(--ink-strong)}
-.cmp .metrics{font-size:15px;color:var(--ink);margin-top:8px;line-height:1.6;font-variant-numeric:tabular-nums}
-.cmp .metrics b{font-size:22px;color:var(--accent)}
-.cmp .note{font-size:12px;color:var(--ink-muted);margin-top:6px}
-
-/* errors */
-.errs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.errcard{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--neg);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow)}
-.errcard .tag{font-family:var(--font-mono);font-size:11.5px;color:var(--neg);margin-bottom:8px}
-.errcard h3{margin:0 0 4px;font-size:14.5px;color:var(--ink-strong)}
-.errcard .rating{font-size:12px;color:var(--ink-muted);margin-bottom:10px}
-.errcard blockquote{margin:0;color:var(--ink-muted);font-size:13px;line-height:1.5;border-left:2px solid var(--line-strong);padding-left:12px}
-.errcard .fix{margin-top:12px;font-size:12px;color:var(--ink-muted)}
-.errcard .fix b{color:var(--ink)}
-
-/* review explorer */
+/* ---- Explorer ---- */
 .explore{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
-.explore .toolbar{padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:14px;align-items:center}
-.filters{display:flex;gap:8px;flex-wrap:wrap}
-.fbtn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-muted);font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer}
+.explore .toolbar{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.filters{display:flex;gap:7px;flex-wrap:wrap}
+.fbtn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-muted);font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}
 .fbtn:hover{border-color:var(--accent);color:var(--accent)}
 .fbtn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.fbtn .cnt{font-weight:400;opacity:.7;margin-left:5px;font-variant-numeric:tabular-nums}
-.livecount{margin-left:auto;font-size:13px;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+.fbtn .cnt{font-weight:400;opacity:.7;margin-left:4px;font-variant-numeric:tabular-nums}
+.livecount{margin-left:auto;font-size:12.5px;color:var(--ink-muted);font-variant-numeric:tabular-nums}
 .livecount b{color:var(--ink-strong)}
-.search input{border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font:inherit;font-size:13px;padding:7px 12px;border-radius:var(--r-sm);width:200px}
+.search input{border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font:inherit;font-size:12.5px;padding:6px 11px;border-radius:var(--r-sm);width:190px}
 .search input:focus{outline:none;border-color:var(--accent)}
-.explore .tablewrap{max-height:480px;overflow:auto}
-table.rtbl{width:100%;border-collapse:collapse;font-size:13px}
-.rtbl th{position:sticky;top:0;background:var(--surface-2);color:var(--ink-muted);text-align:left;font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;padding:11px 14px;border-bottom:1px solid var(--line-strong);white-space:nowrap;cursor:pointer;user-select:none}
-.rtbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.explore .tablewrap{max-height:470px;overflow:auto}
+table.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.rtbl th{position:sticky;top:0;background:var(--surface-2);color:var(--ink-muted);text-align:left;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;padding:10px 13px;border-bottom:1px solid var(--line-strong);white-space:nowrap;cursor:pointer;user-select:none}
+.rtbl td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
 .rtbl tbody tr:hover{background:var(--surface-2)}
-.rtbl td.row{font-family:var(--font-mono);color:var(--ink-faint);font-size:12px;width:44px}
+.rtbl td.row{font-family:var(--font-mono);color:var(--ink-faint);font-size:11.5px;width:40px}
 .rtbl td.stars{white-space:nowrap}
 .rtbl td.stars .s{color:var(--warn);letter-spacing:1px}
-.rtbl td.title{font-weight:600;color:var(--ink-strong);max-width:230px}
-.rtbl td.text{color:var(--ink-muted);max-width:360px;line-height:1.45}
-.rtbl td.text .more{color:var(--accent);cursor:pointer;font-size:11.5px;white-space:nowrap}
-.rtbl .lbl{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.03em}
+.rtbl td.title{font-weight:600;color:var(--ink-strong);max-width:220px}
+.rtbl td.text{color:var(--ink-muted);max-width:340px;line-height:1.45}
+.rtbl td.text .more{color:var(--accent);cursor:pointer;font-size:11px;white-space:nowrap}
+.rtbl .lbl{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.03em}
 .lbl.pos{background:var(--pos-soft);color:var(--pos)}
 .lbl.neu{background:var(--neu-soft);color:var(--neu)}
 .lbl.neg{background:var(--neg-soft);color:var(--neg)}
 .empty{padding:40px;text-align:center;color:var(--ink-muted);font-size:13px}
-.tt{position:relative}
-.tt:hover .tip{display:block}
-.tip{display:none;position:absolute;background:var(--ink);color:var(--bg);padding:6px 9px;border-radius:6px;font-size:11px;z-index:10;white-space:nowrap}
 
-footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:12px;font-family:var(--font-mono);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-@media(max-width:880px){.headline{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.cmprec{grid-template-columns:1fr}.meta{text-align:left}.masthead{flex-direction:column;align-items:flex-start}}
-@media(max-width:600px){.kpis{grid-template-columns:1fr}}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:11.5px;font-family:var(--font-mono);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media(max-width:880px){.headline{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.descgrid{grid-template-columns:1fr}.teach .grid{grid-template-columns:1fr}.meta{text-align:left}.masthead{flex-direction:column;align-items:flex-start}}
+@media(max-width:600px){.kpis{grid-template-columns:1fr}.tvp .row{grid-template-columns:56px 1fr 32px}}
 </style>
 </head>
 <body>
@@ -200,54 +210,83 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
 
   <header class="masthead">
     <div>
-      <div class="kicker">Three-class report</div>
+      <div class="kicker">Interactive analysis</div>
       <h1>Amazon Review Sentiment Model</h1>
-      <div class="sub">Classifying Gift&nbsp;Card reviews as <strong>POSITIVE / NEUTRAL / NEGATIVE</strong> from <strong>title + text only</strong>, judged against the rating. <strong>Balanced sample</strong> — a roughly equal number from each class, drawn from the whole file with a fixed seed.</div>
+      <div class="sub">How well a model classifies Gift&nbsp;Card reviews as <strong>POSITIVE / NEUTRAL / NEGATIVE</strong> from the review text alone — judged against the star rating.</div>
     </div>
     <div class="meta">
-      <div>balanced&nbsp;<b>150 reviews</b> &middot; 50 per class &middot; seed&nbsp;42</div>
+      <div>balanced sample&nbsp;<b>150 reviews</b> &middot; 50 per class</div>
       <div>model&nbsp;&nbsp;<b>DeepSeek-V4-Flash-0731</b></div>
-      <div>classes&nbsp;&nbsp;4&ndash;5&nbsp;POS &nbsp;3&nbsp;NEU &nbsp;1&ndash;2&nbsp;NEG</div>
+      <div>classes&nbsp;&nbsp;4&ndash;5&nbsp;POS &middot; 3&nbsp;NEU &middot; 1&ndash;2&nbsp;NEG</div>
       <button class="recolor" id="themeBtn" type="button">Toggle dark theme</button>
     </div>
   </header>
 
-  <!-- Headline -->
-  <div class="headline">
-    <div class="bigstat">
-      <div class="value">70.0%</div>
-      <div class="num">105 / 150 correct</div>
-      <div class="cap">overall accuracy on the balanced, three-class sample.</div>
-    </div>
-    <div class="verdict">
-      <h2>Plain-language verdict</h2>
-      <p>
-        On a <strong>balanced</strong> sample — one-third of each class — the model is
-        <strong>70% accurate overall</strong>, far below the 98% it looked like on the
-        skewed <em>earlier</em> batch. The honest story: it's <strong>excellent on the ends</strong>
-        (94% positive, 98% negative) but the new <strong>NEUTRAL class largely collapses</strong> —
-        it keeps only 18% of true 3-star reviews, shoving most of them into NEGATIVE.
-      </p>
-      <p>Because each class is equal, <strong>a random guess would score ~33%</strong>, so 70% is real — but it's driven by the two extreme classes, not by understanding "neutral."</p>
-    </div>
-  </div>
+  <nav class="tabs" role="tablist" aria-label="Report sections">
+    <button class="tabbtn active" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+    <button class="tabbtn" role="tab" data-tab="confusion" aria-selected="false">Confusion</button>
+    <button class="tabbtn" role="tab" data-tab="distributions" aria-selected="false">Distributions</button>
+    <button class="tabbtn" role="tab" data-tab="reviews" aria-selected="false">Reviews</button>
+  </nav>
 
-  <!-- KPI row -->
-  <div class="kpis">
-    <div class="kpi">
-      <div class="label">Overall accuracy</div>
-      <div class="num">70.0<small>%</small></div>
-      <div class="hint">balanced 3-class, 105/150</div>
+  <!-- ============ OVERVIEW ============ -->
+  <section class="tabpanel active" id="tab-overview" role="tabpanel">
+    <div class="headline">
+      <div class="bigstat">
+        <div class="value">70%</div>
+        <div class="num">105 / 150 correct</div>
+        <div class="cap">overall accuracy across a balanced, three-class sample.</div>
+      </div>
+      <div class="lede">
+        <h2>At a glance</h2>
+        <p>Judged on a balanced sample — one third of each class — the model is <b>70% accurate overall</b>. It is <b>strong at the two extremes</b> (positive 94%, negative 98%) and <b>weakest in the middle</b>: of 50 true 3-star reviews it keeps just 18% as NEUTRAL, assigning most of them to NEGATIVE.</p>
+      </div>
     </div>
-    <div class="kpi pos"><div class="label">POSITIVE (4&ndash;5)</div><div class="num">94<small>%</small></div><div class="hint">47 / 50</div></div>
-    <div class="kpi neu"><div class="label">NEUTRAL (3)</div><div class="num">18<small>%</small></div><div class="hint">9 / 50</div></div>
-    <div class="kpi neg"><div class="label">NEGATIVE (1&ndash;2)</div><div class="num">98<small>%</small></div><div class="hint">49 / 50</div></div>
-  </div>
 
-  <!-- Confusion matrix -->
-  <section>
+    <div class="kpis">
+      <div class="kpi"><div class="label">Overall accuracy</div><div class="num">70<small>%</small></div><div class="hint">105 / 150</div></div>
+      <div class="kpi pos"><div class="label">POSITIVE (4&ndash;5)</div><div class="num">94<small>%</small></div><div class="hint">47 / 50</div></div>
+      <div class="kpi neu"><div class="label">NEUTRAL (3)</div><div class="num">18<small>%</small></div><div class="hint">9 / 50</div></div>
+      <div class="kpi neg"><div class="label">NEGATIVE (1&ndash;2)</div><div class="num">98<small>%</small></div><div class="hint">49 / 50</div></div>
+    </div>
+
+    <div class="teach">
+      <h3>How to read this</h3>
+      <div class="grid">
+        <div>
+          <h4>The three classes</h4>
+          <ul>
+            <li><span class="lab po">POSITIVE</span> ratings of 4&ndash;5 — reviews that praise, recommend, or express satisfaction.</li>
+            <li><span class="lab ne">NEUTRAL</span> ratings of 3 — neither clearly positive nor negative.</li>
+            <li><span class="lab ng">NEGATIVE</span> ratings of 1&ndash;2 — complaints, warnings, or dissatisfaction.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Confusion matrix</h4>
+          <ul>
+            <li>Rows are the <b>correct</b> class (from the star rating); columns are what the model <b>predicted</b>.</li>
+            <li>Correct answers sit on the diagonal. Everything off the diagonal is a mistake.</li>
+            <li>A balanced sample means every class is equally tested, so the classes are directly comparable.</li>
+          </ul>
+          <div class="cm-hint">Open the <b>Confusion</b> tab to see the full matrix, or explore individual reviews in the <b>Reviews</b> tab.</div>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <div class="sec-head"><h2>Accuracy by class</h2><span class="n">per-class</span></div>
+      <div class="classlines">
+        <div class="cl-row"><div class="cl-name">POSITIVE<small>47 correct &middot; 3 missed</small></div><div class="cl-track"><div class="cl-fill pos" style="width:94%"></div></div><div class="cl-stats"><div class="pc">94%</div><div class="n">47 / 50</div></div></div>
+        <div class="cl-row"><div class="cl-name">NEUTRAL<small>9 correct &middot; 41 missed</small></div><div class="cl-track"><div class="cl-fill neu" style="width:18%"></div></div><div class="cl-stats"><div class="pc">18%</div><div class="n">9 / 50</div></div></div>
+        <div class="cl-row"><div class="cl-name">NEGATIVE<small>49 correct &middot; 1 missed</small></div><div class="cl-track"><div class="cl-fill neg" style="width:98%"></div></div><div class="cl-stats"><div class="pc">98%</div><div class="n">49 / 50</div></div></div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ============ CONFUSION ============ -->
+  <section class="tabpanel" id="tab-confusion" role="tabpanel">
     <div class="sec-head"><h2>Right vs. wrong across all three classes</h2><span class="n">confusion matrix</span></div>
-    <p class="sec-sub">The diagonal (green) is correctness. The glaring off-diagonal block is <strong>32 true NEUTRAL reviews predicted as NEGATIVE</strong>.</p>
+    <p class="sec-sub">The diagonal (green) is where the model agreed with the rating. The largest off-diagonal block is <strong>32 true NEUTRAL reviews the model called NEGATIVE</strong>.</p>
     <div class="cmatrix">
       <div></div>
       <div class="cm-colhdr">pred&nbsp;POSITIVE</div>
@@ -271,115 +310,85 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
 
       <div class="cm-legend">
         <span class="l-pos">correct</span><span class="l-neu">neutral</span><span class="l-neg">mistake</span>
-        <span>45 errors total &middot; 41 of them on NEUTRAL reviews</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Per-class accuracy -->
-  <section>
-    <div class="sec-head"><h2>Accuracy by class</h2><span class="n">per-class, balanced</span></div>
-    <p class="sec-sub">Equal class sizes (50 each) make per-class accuracy directly comparable — no imbalance to hide behind.</p>
-    <div class="classlines">
-      <div class="cl-row"><div class="cl-name">POSITIVE<small>47 correct &middot; 3 miss</small></div><div class="cl-track"><div class="cl-fill pos" style="width:94%"></div></div><div class="cl-stats"><div class="pc">94%</div><div class="n">47 / 50</div></div></div>
-      <div class="cl-row"><div class="cl-name">NEUTRAL<small>9 correct &middot; 41 miss</small></div><div class="cl-track"><div class="cl-fill neu" style="width:18%"></div></div><div class="cl-stats"><div class="pc">18%</div><div class="n">9 / 50</div></div></div>
-      <div class="cl-row"><div class="cl-name">NEGATIVE<small>49 correct &middot; 1 miss</small></div><div class="cl-track"><div class="cl-fill neg" style="width:98%"></div></div><div class="cl-stats"><div class="pc">98%</div><div class="n">49 / 50</div></div></div>
-    </div>
-  </section>
-
-  <!-- Descriptive layer -->
-  <section>
-    <div class="sec-head"><h2>Descriptive view: where it succeeds and fails</h2><span class="n">at a glance</span></div>
-    <p class="sec-sub">Three read-only pictures of the balanced sample. Everything is on the page — no drilling required — so a reader can see the model's success and its failures without interacting.</p>
-    <div class="descgrid">
-      <!-- Star distribution -->
-      <div class="descpanel">
-        <h3>Rating distribution (balanced sample)</h3>
-        <p class="sub">Each class contributes ~50 reviews. Note: this seed drew no 4-star reviews — only 5, 3, 2, and 1.</p>
-        <div class="starhist">
-          <div class="bar"><i style="height:100%"></i><span class="cnt">50</span><span class="st">&#9733;&#9733;&#9733;&#9733;&#9733;</span></div>
-          <div class="bar"><i style="height:3px"></i><span class="cnt s0">0</span><span class="st">&#9733;&#9733;&#9733;&#9733;</span></div>
-          <div class="bar"><i style="height:100%"></i><span class="cnt">50</span><span class="st">&#9733;&#9733;&#9733;</span></div>
-          <div class="bar"><i style="height:10%"></i><span class="cnt">5</span><span class="st">&#9733;&#9733;</span></div>
-          <div class="bar"><i style="height:90%"></i><span class="cnt">45</span><span class="st">&#9733;</span></div>
-        </div>
-        <div class="desc-lbl">Read: the sample is balanced across classes, so any score difference is real, not an artifact of size.</div>
-      </div>
-
-      <!-- True vs predicted -->
-      <div class="descpanel tvp">
-        <h3>Correct answer vs. model prediction, by class</h3>
-        <p class="sub">Both bars share one axis (max&nbsp;=&nbsp;82). Solid = truly in the class; faded = how many the model <em>called</em> that class. A gap between them is over- or under-prediction.</p>
-        <div class="row"><span class="name">POSITIVE</span><div class="track"><div class="fill true-pos" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-pos" style="width:68%"></div></div><span class="num"><b>56</b></span></div>
-        <div class="row"><span class="name">NEUTRAL</span><div class="track"><div class="fill true-neu" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neu" style="width:15%"></div></div><span class="num"><b>12</b></span></div>
-        <div class="row"><span class="name">NEGATIVE</span><div class="track"><div class="fill true-neg" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neg" style="width:100%"></div></div><span class="num"><b>82</b></span></div>
-        <legend><span class="l-t">true (correct answer)</span><span class="l-p">predicted</span></legend>
-        <div class="desc-lbl">Read: the model says "NEGATIVE" 82 times but only 50 are truly negative — and it says "NEUTRAL" 12 times where 50 are actually neutral. The failures are systematic, not random.</div>
+        <span>45 mistakes total &middot; 41 of them on NEUTRAL reviews</span>
       </div>
     </div>
 
-    <!-- How often each class was answered right -->
-    <div class="descpanel">
-      <h3>How often each class was answered right</h3>
-      <p class="sub">Correct = green. Wrong = red (on NEUTRAL, the wrong segment is amber because most errors fell into the balanced middle). A longer green bar is a stronger class.</p>
-      <div class="recall">
-        <div class="r"><span class="name">POSITIVE</span><div class="stack"><div class="ok" style="width:94%"></div><div class="bad" style="width:6%"></div></div><div class="meta"><b>94%</b> &middot; 47/50</div></div>
-        <div class="r nneu"><span class="name">NEUTRAL</span><div class="stack"><div class="ok" style="width:18%"></div><div class="bad" style="width:82%"></div></div><div class="meta"><b>18%</b> &middot; 9/50</div></div>
-        <div class="r"><span class="name">NEGATIVE</span><div class="stack"><div class="ok" style="width:98%"></div><div class="bad" style="width:2%"></div></div><div class="meta"><b>98%</b> &middot; 49/50</div></div>
-      </div>
-      <div class="desc-lbl">Read: the model is near-perfect at the two extremes and poor in the middle — its one genuine weakness is the NEUTRAL class.</div>
+    <div class="observe hl" style="margin-top:22px">
+      <h3>NEUTRAL reviews lean toward NEGATIVE</h3>
+      <p>True 3-star reviews are rarely kept as NEUTRAL. Of 50, the model kept <strong>9 as NEUTRAL (18%)</strong>, moved <strong>32 to NEGATIVE</strong>, and <strong>9 to POSITIVE</strong>. Because 3-star reviews usually carry a reservation, a complaint, or a caveat, they read as negative even when the overall rating is "okay".</p>
+      <div class="big">32 &rarr; NEGATIVE &nbsp;&middot;&nbsp; 9 kept NEUTRAL &nbsp;&middot;&nbsp; 9 &rarr; POSITIVE</div>
     </div>
-  </section>
 
-  <!-- The neutral collapse -->
-  <section>
-    <div class="sec-head"><h2>The question: does NEUTRAL survive, or collapse?</h2><span class="n">finding</span></div>
-    <div class="callout crit">
-      <h3>NEUTRAL collapses into NEGATIVE</h3>
-      <p>Of 50 true 3-star reviews, the model kept just <strong>9 as NEUTRAL (18%)</strong>. <strong>32 went to NEGATIVE</strong> and 9 to POSITIVE. So a genuine "neutral" class does <em>not</em> get its own well: 3-star reviews — which almost always carry a reservation, a complaint, or a caveat — read as negative to the model.</p>
-      <div class="big">True NEUTRAL &rarr; 32 NEGATIVE &middot; 9 NEUTRAL &middot; 9 POSITIVE</div>
+    <div class="observe warn">
+      <h3>What the pattern adds up to</h3>
+      <p>The model over-uses NEGATIVE and under-uses NEUTRAL. It called <strong>82</strong> reviews NEGATIVE (only 50 truly are) and <strong>12</strong> NEUTRAL (50 truly are). The strengths are on the ends of the scale; the middle class is where most errors live.</p>
     </div>
+
+    <div class="sec-head" style="margin-top:26px"><h2>Examples of the middle-class errors</h2><span class="n">true 3-star</span></div>
     <div class="errs">
       <div class="errcard">
-        <div class="tag">3&#9733; &rarr; CALLED NEGATIVE (the dominant error)</div>
+        <div class="tag">3&#9733; &rarr; CALLED NEGATIVE</div>
         <h3>&ldquo;Would never do again&rdquo;</h3>
         <div class="rating">Rated 3&star;</div>
         <blockquote>They don't tell you how to use it for your own purchases. I thought I was using it until I got a statement…</blockquote>
-        <div class="fix"><b>Why:</b> a reservation reads as complaint. The model hears the downside, not the "fine overall" that earned 3 stars.</div>
+        <div class="why"><b>Why:</b> the reservation reads as a complaint, so the model hears the downside rather than the "fine overall" that earned 3 stars.</div>
       </div>
       <div class="errcard">
         <div class="tag">3&#9733; &rarr; CALLED POSITIVE</div>
         <h3>&ldquo;Cute Presentation&rdquo;</h3>
         <div class="rating">Rated 3&star;</div>
         <blockquote>Cute and feminine, recipient loved the gift.</blockquote>
-        <div class="fix"><b>Why:</b> warm words despite a lukewarm rating — tone says positive, so the model overshoots.</div>
+        <div class="why"><b>Why:</b> warm wording despite a lukewarm rating — the tone says positive, so the model overshoots past NEUTRAL.</div>
       </div>
     </div>
   </section>
 
-  <!-- Balanced vs imbalanced -->
-  <section>
-    <div class="sec-head"><h2>What the balanced run revealed that the imbalanced one hid</h2><span class="n">before / after</span></div>
-    <div class="cmprec">
-      <div class="cmp"><h3>Imbalanced sample (100)</h3><div class="metrics">Overall <b>98%</b><br>POS 97.7% &middot; NEG 100%<br>NEUTRAL: not tested</div><div class="note">represents real-world mix: 88% positive</div></div>
-      <div class="cmp"><h3>Balanced sample (150)</h3><div class="metrics">Overall <b>70%</b><br>POS 94% &middot; NEU 18% &middot; NEG 98%<br>baseline 33%</div><div class="note">one-third each class &mdash; exposes the weak middle</div></div>
-      <div class="cmp"><h3>What the skew hid</h3><div class="metrics">+28pt illusion<br><b>98% &rarr; 70%</b><br>NEUTRAL &asymp; collapses</div><div class="note">the 98% was partly the easy-positive majority; the real weakness is in the middle of the rating scale</div></div>
+  <!-- ============ DISTRIBUTIONS ============ -->
+  <section class="tabpanel" id="tab-distributions" role="tabpanel">
+    <div class="sec-head"><h2>Descriptive view</h2><span class="n">distributions &amp; recall</span></div>
+    <p class="sec-sub">Three pictures of the balanced sample — what it contains, how predictions compare to the truth, and how often each class was answered right.</p>
+
+    <div class="descgrid">
+      <div class="descpanel">
+        <h3>Rating distribution</h3>
+        <p class="sub">Each class contributes ~50 reviews. This sample drew no 4-star reviews — only 5, 3, 2, and 1 star appeared.</p>
+        <div class="starhist">
+          <div class="bar"><i style="height:100%"></i><span class="cnt">50</span><span class="st">&#9733;&#9733;&#9733;&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:3px"></i><span class="cnt">0</span><span class="st">&#9733;&#9733;&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:100%"></i><span class="cnt">50</span><span class="st">&#9733;&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:10%"></i><span class="cnt">5</span><span class="st">&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:90%"></i><span class="cnt">45</span><span class="st">&#9733;</span></div>
+        </div>
+        <div class="desc-lbl">The sample is balanced across classes, so any difference between them reflects the model, not the size of a class.</div>
+      </div>
+
+      <div class="descpanel tvp">
+        <h3>Correct answers vs. predictions</h3>
+        <p class="sub">Both bars share one axis (max = 82). Solid = how many reviews are actually in the class; faded = how many the model called that class. The gap is over- or under-prediction.</p>
+        <div class="row"><span class="name">POSITIVE</span><div class="track"><div class="fill true-pos" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-pos" style="width:68%"></div></div><span class="num"><b>56</b></span></div>
+        <div class="row"><span class="name">NEUTRAL</span><div class="track"><div class="fill true-neu" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neu" style="width:15%"></div></div><span class="num"><b>12</b></span></div>
+        <div class="row"><span class="name">NEGATIVE</span><div class="track"><div class="fill true-neg" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neg" style="width:100%"></div></div><span class="num"><b>82</b></span></div>
+        <legend><span class="l-t">true (correct answer)</span><span class="l-p">predicted</span></legend>
+        <div class="desc-lbl"><b>Over &amp; under:</b> the model says NEGATIVE 82 times where only 50 are truly negative, and NEUTRAL 12 times where 50 actually are. The failures are systematic, not random.</div>
+      </div>
+    </div>
+
+    <div class="descpanel">
+      <h3>How often each class was answered right</h3>
+      <p class="sub">Correct = green; wrong = red. On NEUTRAL the wrong segment is amber to mark where most of its errors land.</p>
+      <div class="recall">
+        <div class="r"><span class="name">POSITIVE</span><div class="stack"><div class="ok" style="width:94%"></div><div class="bad" style="width:6%"></div></div><div class="meta"><b>94%</b> &middot; 47/50</div></div>
+        <div class="r nneu"><span class="name">NEUTRAL</span><div class="stack"><div class="ok" style="width:18%"></div><div class="bad" style="width:82%"></div></div><div class="meta"><b>18%</b> &middot; 9/50</div></div>
+        <div class="r"><span class="name">NEGATIVE</span><div class="stack"><div class="ok" style="width:98%"></div><div class="bad" style="width:2%"></div></div><div class="meta"><b>98%</b> &middot; 49/50</div></div>
+      </div>
+      <div class="desc-lbl">The model is near-perfect on the two extremes and weak in the middle — the NEUTRAL class is its main area of error.</div>
     </div>
   </section>
 
-  <!-- Insights -->
-  <section>
-    <div class="sec-head"><h2>What the evidence says</h2><span class="n">strengths &amp; limits</span></div>
-    <div class="cmprec">
-      <div class="cmp"><h3>Strong on clear sentiment</h3><div class="metrics">POS 94% &middot; NEG 98%</div><div class="note">unambiguous positive and negative reviews are handled well — both ends of the scale.</div></div>
-      <div class="cmp"><h3>Weak on the middle</h3><div class="metrics">NEU 18%</div><div class="note">neutral is not truly learned: 3-star reviews are mostly pulled to NEGATIVE by their complaint-like tone.</div></div>
-      <div class="cmp"><h3>Why "A" for sentiment, not for range</h3><div class="metrics">+37 pt over baseline</div><div class="note">70% beats 33% (random) but the gains come almost entirely from the extremes — neutral needs a better definition or more examples.</div></div>
-    </div>
-  </section>
-
-  <!-- Explorer -->
-  <section>
-    <div class="sec-head"><h2>Explore every review</h2><span class="n">filterable, 3-class</span></div>
+  <!-- ============ REVIEWS ============ -->
+  <section class="tabpanel" id="tab-reviews" role="tabpanel">
+    <div class="sec-head"><h2>Explore the reviews</h2><span class="n">filterable</span></div>
     <p class="sec-sub">All 150 sampled reviews. Filter by correctness or class, search the text, and click a heading to sort. The live count always matches the rows shown.</p>
     <div class="explore">
       <div class="toolbar">
@@ -411,8 +420,8 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
   </section>
 
   <footer>
-    <span>Source: Gift_Cards.jsonl.gz (152,410 reviews) &middot; Amazon Reviews 2023 (McAuley Lab)</span>
-    <span>Balanced seed-42 150-review sample &middot; all figures verbatim from scoring output</span>
+    <span>Gift_Cards.jsonl.gz &middot; Amazon Reviews 2023 (McAuley Lab)</span>
+    <span>balanced sample &middot; fixed seed &middot; 150 reviews</span>
   </footer>
 </div>
 
@@ -421,21 +430,30 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
 "use strict";
 var DATA=[{"row": 4850, "rating": 1.0, "title": "Damaged Box", "text": "Bought this Amazon gift card with a black box. The box came damaged and was not usable.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 16770, "rating": 1.0, "title": "Would use this but NOT with CHASE Bank.", "text": "I have had a Amazon/Chase Credit Card for years. The Chase Credit Card people are great! So to take advantage of this offer I opened a Checking Account at my Local Chase Branch and deposited 4 checks", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 21929, "rating": 1.0, "title": "Dissatisfied with the results.", "text": "The gift card is beautiful. However, the gift card was sent to not only a wrong address, but wrong state. When I inquired about it, I was told they were sorry for the inconvenience, but cannot reimbur", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 30424, "rating": 1.0, "title": "Defective card", "text": "Card did not work. Called and hot automated and after 3 attempts it said it was good to go. Nope. Two grocery stores declined card", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 35722, "rating": 1.0, "title": "No card", "text": "I wrote a card to go with the gift card and the person got the gift card and had no idea who it was from", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 37035, "rating": 1.0, "title": "Why refund is not avalible", "text": "Cannot ask for a refund .Sad", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 44246, "rating": 1.0, "title": "terrible desicion", "text": "nothing to review", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 44675, "rating": 1.0, "title": "Not happy", "text": "Reloaded wrong balance because it didn\u2019t confirm for me to check.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 45736, "rating": 1.0, "title": "DOES NOT WORK.  Don't buy", "text": "DO NOT buy these. I gave two as gifts and neither worked. This company does not no accept returns..contact amazon !  I would not recommend this product!!  There is nothing to activate on your end..the", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 48431, "rating": 1.0, "title": "Not sure whats going on here!", "text": "I bought these 2 gift cards under the buy $50 worth of gift cards and receive a $15 credit. I have not seen the $15 dollar credit and now it says I'm not eligible with NO reason! Someone please explai", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 50375, "rating": 2.0, "title": "Confusing.", "text": "Had to take it out of a different account. Kinda confusing.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 63931, "rating": 1.0, "title": "Very embarrassed and dissatisfied with this product!", "text": "I purchased this card for my Mother's 80th Birthday present. She attempted to use it to purchase an electric skillet for Amazon but it kept coming up as declined when she used it to pay for the skille", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 70183, "rating": 1.0, "title": "Its a scam", "text": "Rec'd this as a gift. Purchaser was told it is accepted at restaurants in our area....closest restaurant is about 60 miles away and most of the restaurants had poor reviews......does not deserve any s", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 71550, "rating": 1.0, "title": "Bonus on reload", "text": "I\u2019m 100% sure Amazon will not print my honest review!!  This reload gift card for $10.00 bonus credit is deceiving, false, and a BIG LIE!!!  I\u2019m a sucker but no more.  Buyers beware and read the fine", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 74269, "rating": 1.0, "title": "you messed up", "text": "you neglected to send the box, and birthday card showing who it was from. Shame on you", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 74627, "rating": 1.0, "title": "This card sucks", "text": "Do not buy it it's too hard to activate very useless!!!!!!!!!!!", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 75023, "rating": 1.0, "title": "Problem", "text": "I used the reload a lot. My grandchildren chunked the card in the trash. Now Amazon is asking me to re-type my whole credit card number to re-load but I can't", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 90536, "rating": 1.0, "title": "Damaged box.", "text": "I bought three gift cards in nice, cute boxes. This one came in terrible shape. It wasn't any fault of shipping, they all came together but this was the only ruined one. They won't replace or refund s", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 93165, "rating": 1.0, "title": "Buyer beware!", "text": "Stay away from these gift cards.<br />I purchased these for Christmas gift and they didn\u2019t work.<br /><br />I tried to apply them to my kids account and when entered we got a \u201cinvalid code warning\u201d<br", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 93671, "rating": 1.0, "title": "STOLEN! By Amazon Driver??", "text": "Well I am glad that Amazon has refunded the money and sent out a new card!!  However, the lady at Amazon refused to take any type of steps to cancel the card?? Or to investigate, not sure if Amazon ha", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 95149, "rating": 2.0, "title": "Thought it was for a gift card :(", "text": "Confusing", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 99713, "rating": 1.0, "title": "Thanks", "text": "This didnt work out how i tried but was refunded", "true": "NEGATIVE", "pred": "NEUTRAL", "ok": false}, {"row": 100690, "rating": 1.0, "title": "One Star", "text": "I was supposed to receive a $15 promotion for buying this card and never did!!  I feel cheated!", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 106226, "rating": 1.0, "title": "Quick delivery of AMC card. DOES NOT ACCEPT AMAZON POINTS", "text": "I ordered a $50 amc card and it was delivered within a week. Looking at so many negative comments, I promptly checked  the balance and found $50 value balance in the card. My experience is really good", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 107635, "rating": 1.0, "title": "Wasted $50", "text": "card came with the activation code ripped which rendered the card unusable.  wasted $50 as Lyft does not have a customer service phone number.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 110554, "rating": 1.0, "title": "You delivered a gift card which is like cash to the wrong address.", "text": "Gift cards are like cash and should be treated like cash so when you give it to someone that wasn't supposed to get it, it might be hard to track down the next day. So you should deliver the gift card", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 111351, "rating": 1.0, "title": "Something's not quite right.", "text": "My apologies, I was quite p/o-ed it took 4 (four) days, plus, to delivere such a large item as a car<br />. Missing my son's big 50 birthday, which I could not attend. Perhaps, l Prime has loop holes", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 113487, "rating": 1.0, "title": "Important catch Spotify doesn't mention", "text": "This is not giftable to anyone who has additional services bundled with Spotify like hulu. To use this card you must have *only* Spotify. This means of you already have a bundle your are forced to get", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 114979, "rating": 1.0, "title": "Old way was better", "text": "Why did this change? The old way, I could add gift cards that had only a few dollars left on them fairly easy, without adding the card to my account first. This is a huge hassle now, and it does NOT t", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 115265, "rating": 1.0, "title": "No longer taken at Pei Wei", "text": "Since Pei Wei and PF Changs separated businesses in early 2019, these cards are no longer accepted at Pei Wei, even though the cards say they are.  Would have been good to know before I wasted the mon", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 117626, "rating": 1.0, "title": "GE Amazon card is CROOKED", "text": "Worse possible outfit.  They could not get my bank routing in their system correctly causing returned payments.  DUH  I put in the right numbers but they processed it wrong or something and then immed", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 119101, "rating": 1.0, "title": "instruction do not match invoice", "text": "instructions state to match serial number code to purchase to see amount but in the invoice description there is no number to match it to.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 122456, "rating": 1.0, "title": "Amazon gift card", "text": "I have just spent an hour of my precious time trying to place my gift card on my account!! It use to be so easy, even for an old lady like me, but you\u2019ve changed the format and I never got to where I", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 122572, "rating": 2.0, "title": "Why change the behavior without notifying?", "text": "It's unfortunate that everytime Amazon changes this app, it seems to go the wrong way. I now have a very slow app, and for some reason the balance reload changed to pick my default buying card. It use", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 123634, "rating": 1.0, "title": "Where's My Money!?!", "text": "I bought gift cards for my family for Christmas. They were sent to me with being activated, even though I was charged for the activation. Now my family is trying to use them and they're worthless. I/w", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 123694, "rating": 1.0, "title": "Gift Box Dented / No Gift Message Included", "text": "Person I sent it to received a one hundred fifty dollar gift card inside the extremely dented gift box inside a manila envelope.  The gift box was dented right down the center, from top to bottom.  Gi", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 127893, "rating": 2.0, "title": "I made a selection error but tried to change it ...", "text": "I made a selection error but tried to change it but unable to, so I was not able to take advantage of the offer.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 129905, "rating": 2.0, "title": "Two Stars", "text": "I don\u2019t even see it anymore, I don\u2019t know if you have to be a member or not.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 134522, "rating": 1.0, "title": "Buy visa instead", "text": "Can\u2019t use it anywhere it comes up declined even after registering in the card", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 134529, "rating": 1.0, "title": "I got visa gift card i cant use it", "text": "I got gift card visa i cant use it", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 134567, "rating": 1.0, "title": "I got visa gift card i cant use it", "text": "I got gift card visa i cant use it", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 138990, "rating": 1.0, "title": "One Star", "text": "Terrific presentation!!", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 141483, "rating": 1.0, "title": "Unhappy", "text": "I received the Gift Card on 12/27 afternoon.  My relative had left my home back to New York on 12/26 morning with no X'mas gift from me. :(", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 141711, "rating": 1.0, "title": "Doesn't appear to work at the pump.", "text": "The odd outer paper wrap (in which there appears no satisfactory way of opening) boasts that this card can be used wherever Visa is accepted.  I found this not so in my experience.  The gas pump card", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 141991, "rating": 1.0, "title": "I am lucky that I looked at the reviews because ...", "text": "I am lucky that I looked at the reviews because I thought it was 100 for 100.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 142260, "rating": 1.0, "title": "SCAM", "text": "Horrible! You took $100. out of my account but my son never received the ecard. I  ended up going to the store and purchasing another $100. gift card.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 143516, "rating": 1.0, "title": "Refusal of Boone,NC Regal theater to redeem $50 in Fandango  gift tickets", "text": "Could not find any procedure online  to  handle exchange as theater said to do.Money paid in good .Seems improper to me.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 145979, "rating": 1.0, "title": "Total Screwup", "text": "Ordinarily, Amazon does great with these.  We give out these cards as Christmas gifts. But this year they sent us the cards which were supposed to have the appropriate balance. Unfortunately the cards", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 151913, "rating": 1.0, "title": "Impossible to use", "text": "Unable to convert to Top Golf as stated.  Website never works and no customer service to return calls.  DO NOT BUY THIS GIFTCARD", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 151920, "rating": 1.0, "title": "Make sure you read all the fine prints. Don\u2019t trust customer representative.", "text": "I saw the promotion about loading $100 get $10 gift. I called in to verify if I can load multiple transactions to make up total $100. Been told multiple translation is acceptable. After done it, reali", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 6861, "rating": 3.0, "title": "Would never do again", "text": "They don;t tell you how to use it for your own purchases.  I thought I was using it until I got a statement from my In Store\" credit card.  Still don't know how to use up the dollars.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 12089, "rating": 3.0, "title": "did not arrive when scheduled", "text": "In fact, I'm still waiting for it.  Supposed to be here yesterday.  Tracking says it's (literally) 20 min from my house early in the day but couldn't quite make it here.  I hope it gets here before my", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 13862, "rating": 3.0, "title": "who cannot love Starbucks.", "text": "A gift, and you forgot the gift card.", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 14813, "rating": 3.0, "title": "Cute Presentation", "text": "Cute and feminine, recipient loved the gift.", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 21535, "rating": 3.0, "title": "Changing the price to what I wanted, disappointed", "text": "I keep trying to order a $30.00 card and ordered a$30.00 card in the OTHER spot and when saving it , it always came up as $25.00. Did not like that I could not order what I wanted.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 34680, "rating": 3.0, "title": "Bad Experience", "text": "Some of the bad experience was my fault for challenging the charge, but no one told me they were not unlocking the amount on the cards when I paid the bill.  It was an embaressment when my grandchildr", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 34953, "rating": 3.0, "title": "the gift cards came nicely packaged.", "text": "I was supposed to get a $5 credit for each gift card purchased (2 X $5) but I have not seen the credit. Not sure if this is an Amazon problem or the card used. Otherwise, the gift cards came nicely pa", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 36779, "rating": 3.0, "title": "Three Stars", "text": "As usual", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 46294, "rating": 3.0, "title": "Nothing special", "text": "These are made of a thin cardboard material and not quite as nice as we had hoped. We ended up stocking up on clearance sales of the nicer boxes for about half the price.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 46713, "rating": 3.0, "title": "works but could be simpler", "text": "works but could be simpler to use", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 47258, "rating": 3.0, "title": "It should be Clearer and Easier to Give money to Amazon", "text": "I wanted to apply 2 gift cards that I received in the mail to reload my gift card balance.  I found the web site unclear, and the correct way to do this difficult to find (I don't do this frequently).", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 48687, "rating": 3.0, "title": "Three Stars", "text": "Didn't realize there wasn't a store in the area", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 50542, "rating": 3.0, "title": "Needs more", "text": "The recipient did know who the gift card was from.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 53097, "rating": 3.0, "title": "Card", "text": "Work", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 57971, "rating": 3.0, "title": "The tab covering the barcode was missing", "text": "The tab covering the barcode was missing. Does this mean the card has been compromised?<br />The package states a tab should be covering the barcode upon arrival.  I inked parts of the barcode on the", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 58022, "rating": 3.0, "title": "Don't trust the shipping", "text": "Bought this as a Christmas gift for my son's teacher and it took almost a full week to arrive, too late to give it to her. I was willing to pay extra for 1-day shipping to make sure it arrived quickly", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 58514, "rating": 3.0, "title": "It's a gift card", "text": "And it's not free", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 60465, "rating": 3.0, "title": "Hold out until pandemic in the past to eat here.", "text": "Carry out pathetic! Taking tremendous advantage of customers during pandemic! Prior inside dining gave much larger portions and better quality food!", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 67519, "rating": 3.0, "title": "Card did not work....very upset", "text": "I bought this card for $50 used it on a boat cup holder! Thought it accepted it! When I got  item it was charged to my credit card! So I threw the card away! Is there any way that the card can be repl", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 67604, "rating": 3.0, "title": "giftcard", "text": "accidently ordered but it was reimbursed", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 69834, "rating": 3.0, "title": "Do we really get a 2% back???", "text": "It claims you get a percentage back but I've never seen it.  Not saying I didn't, just saying I can't see it.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 76561, "rating": 3.0, "title": "Nice", "text": "Nice", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 78253, "rating": 3.0, "title": "Arrived quickly (the next day) but I gave it 3 ...", "text": "Arrived quickly (the next day) but I gave it 3 stars because the card was not plastic and it was bent. Looked as if it wasn't new. The Kraft paper was also slightly bent. It's cute but looks as if som", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 79199, "rating": 3.0, "title": "The envelope is ripped", "text": "The envelope is ripped. This is a supposed to be a gift...", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 81064, "rating": 3.0, "title": "Too much for purchase", "text": "Too much for purchase", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 81132, "rating": 3.0, "title": "Three Stars", "text": "Not obvious where to check the balance after reload.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 84207, "rating": 3.0, "title": "Fairly Nice", "text": "It is nice to buy a gift card for a present, but it would be nice if the envelopes they seal the cards in did not say Amazon right on them... kind of gives what is inside away.", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 85151, "rating": 3.0, "title": "No where to write the Gift Card Value", "text": "This looks beautiful. I have no idea if the value is correct or not, but my initial issue is that I am going to have to verbally tell the recipients what the value of the cards are because there is no", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 94939, "rating": 3.0, "title": "Would be 5 stars without activation fee", "text": "Git card for someone who did me a huge favor,  Would be 5 stars except for the service fee.  Would have gone with an entirely different card except I needed the card to be multi-purpose.  There\u2019s a re", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 97001, "rating": 3.0, "title": "It's ok", "text": "It's a pain to figure out how, but after that it works", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 103693, "rating": 3.0, "title": "Three Stars", "text": "I liked the book but I need more recipes as my husband is very fussy. LOL", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 109710, "rating": 3.0, "title": "they will purchase good tacos. The gift cards are very plain", "text": "I will give these as gifts. they will purchase good tacos. The gift cards are very plain.", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 114095, "rating": 3.0, "title": "wrong house", "text": "gift card delivered to vacant house (wrong house) luckily my son has surveillance camera and I showed him photo of the place it was delivered.  he scouted neighbor and found it,  ugh!!! not happy", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 115861, "rating": 3.0, "title": "Different card Received then pictured!", "text": "Hope it\u2019s not a fake because it looks totally different then the card pictured!!!!", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 122616, "rating": 3.0, "title": "Good bonus, but", "text": "Can\u2019t be transferred again to my debit card when I don\u2019t use the money", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 127219, "rating": 3.0, "title": "Item arrived crushed", "text": "Boxed was packed in an envelope. The tin was crushed when it arrived. Would have otherwise been nice to give.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 127340, "rating": 3.0, "title": "Food Stains?", "text": "Got a couple of gift cards - but why are the envelopes sealed?  I had planned to write a message in them.  Also, one had a big, chocolate thumb print on it!", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 128050, "rating": 3.0, "title": "Paper gift card gets stuck in box", "text": "I was very worried the gift card was lost or stolen.  As I was about to contact Amazon, I looked at the reviews.  The first two reported the card got stuck in the box.  This is exactly what happened.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 128507, "rating": 3.0, "title": "Nice presentation for a gift card except for the fact ...", "text": "Very cute and different.  Nice presentation for a gift card except for the fact that it arrived folded incorrectly and didn't pop up when opened.  I tried but couldn't correct it.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 129304, "rating": 3.0, "title": "No amount on card and directions are inaccurate!", "text": "Ordered several cards of different amounts. All cards are the same. Instructions say to check the serial numbers in \"My Orders\"... well they AREN'T listed there! No help from customer service yet... V", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 130398, "rating": 3.0, "title": "Three Stars", "text": "Is anyone going to read this? They're gift cards.", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 133381, "rating": 3.0, "title": "Box was damaged upon arrival", "text": "The gift card itself was fine, no issues.  The premium box it arrived in was a bit crushed and there doesn't seem to be a way to ask for a replacement box without a new gift card.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 135262, "rating": 3.0, "title": "Found both website and app difficult follow,", "text": "Took me several tries to load $100to the card. The check boxes didn't work.finally ,after checking either 60 or 100, i wrote in the amount in the other box. Bingo!!!", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 135399, "rating": 3.0, "title": "GREAT", "text": "GREAT", "true": "NEUTRAL", "pred": "POSITIVE", "ok": false}, {"row": 136077, "rating": 3.0, "title": "don\u2019t reload huge amounts", "text": "it\u2019s okay", "true": "NEUTRAL", "pred": "NEUTRAL", "ok": true}, {"row": 138157, "rating": 3.0, "title": "Amazon Gift Card", "text": "I recall purchasing gift cards in the past which were e-mailed to the recipient.  Now you mail a actual plastic card and charge postage?  How 20th Century.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 140378, "rating": 3.0, "title": "Tricky Checkout", "text": "I purchase this by accident.  Be careful when you order anything from Amazon.  Check out is a little tricky.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 142060, "rating": 3.0, "title": "Three Stars", "text": "this came 1 week late don't buy it", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 147871, "rating": 3.0, "title": "When it works", "text": "Good if it works, I had to use three different cards before it worked. All had enough balance to accomodate adding funds, but found it disappointing.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 149140, "rating": 3.0, "title": "I wrote a message to show who it was from ...", "text": "I wrote a message to show who it was from as it was a gift.  No message inside,  so recipient didn't know who sent.", "true": "NEUTRAL", "pred": "NEGATIVE", "ok": false}, {"row": 1818, "rating": 5.0, "title": "Great", "text": "It's good", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 6979, "rating": 5.0, "title": "Cute Little Amazon Box", "text": "Really cool little box that closes with magnets. It's definitely a fun idea.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 7403, "rating": 5.0, "title": "Great gift!", "text": "Love the snowflake tin!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 8328, "rating": 5.0, "title": "Gift", "text": "Easy to use", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 8878, "rating": 5.0, "title": "Five Stars", "text": "Makes a great gift purchase", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 12158, "rating": 5.0, "title": "It's a gift card.", "text": "You can't really go wrong with a gift card.", "true": "POSITIVE", "pred": "NEUTRAL", "ok": false}, {"row": 12831, "rating": 5.0, "title": "This is the perfect gift", "text": "What\u2019s not to like?  This card is good for anything, anytime.  I love using the Amazon Gift Card to show anyone they are loved and appreciated.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 19508, "rating": 5.0, "title": "Five Stars", "text": "kids like it", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 22126, "rating": 5.0, "title": "Great way to shop", "text": "Love reloading from home.  Easier to do than constantly going back and forth to the store for more cards.  Very easy and convenient", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 22402, "rating": 5.0, "title": "Nice as a gift!", "text": "Great for gift giving and I loved the first time reload incentive!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 24440, "rating": 5.0, "title": "Good purchase", "text": "Bought for my son in law.  He liked it.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 26065, "rating": 5.0, "title": "My daughter loves it!", "text": "Bought during lightening deals and have as a gift.  My daughter was happy to use.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 26333, "rating": 5.0, "title": "Great gift card", "text": "This card holder was unbelievably AWESOME!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 27188, "rating": 5.0, "title": "Movies", "text": "Great", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 28744, "rating": 5.0, "title": "Five Stars", "text": "Love these bags!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 28824, "rating": 5.0, "title": "This is so cute!", "text": "Used for a group gift card. There just happened to be 5 of us and she's a dog mama.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 31331, "rating": 5.0, "title": "Five Stars", "text": "tyvm", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 35162, "rating": 5.0, "title": "Great way to save", "text": "Back in the day, my bank used to have something called Christmas Club where the bank would automatically put your chosen amount from your checking to Christmas account, and in December you would have", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 39307, "rating": 5.0, "title": "Gift card in a tin", "text": "Liked the packaging; perfect with a ribbon bow for a gift", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 43820, "rating": 5.0, "title": "just like the description", "text": "It's a gift card, just like the description.", "true": "POSITIVE", "pred": "NEUTRAL", "ok": false}, {"row": 44991, "rating": 5.0, "title": "Looks Good", "text": "I like because it  worked", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 54437, "rating": 5.0, "title": "Love it", "text": "Just something special", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 56329, "rating": 5.0, "title": "Five Stars", "text": "LOVE", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 61016, "rating": 5.0, "title": "Everyone likes Amazon gift card.", "text": "Almost everyone shops in Amazon.Best gift card.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 61953, "rating": 5.0, "title": "Great!", "text": "Works Great!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 62466, "rating": 5.0, "title": "GREAT", "text": "Just what I needed", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 63248, "rating": 5.0, "title": "Five Stars", "text": "Great", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 64625, "rating": 5.0, "title": "Great versatile gift!", "text": "Great gift that allows the receiver to Pick what they really want!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 66022, "rating": 5.0, "title": "how cute these are!!!", "text": "Absolutely a must for the holiday gift exchanges. Great gift and already wrapped.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 66061, "rating": 5.0, "title": "Easy gift for themselves", "text": "I bought 3 to give to my nephews", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 69534, "rating": 5.0, "title": "Five Stars", "text": "perfect - quick ship", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 75154, "rating": 5.0, "title": "Way to split payments if needed", "text": "Quick reload easy to split payments on big purchases", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 78259, "rating": 5.0, "title": "5% sweet sauce", "text": "Sweet sauce. Thanks for the extra $5", "true": "POSITIVE", "pred": "NEGATIVE", "ok": false}, {"row": 79094, "rating": 5.0, "title": "Easy as usual", "text": "Easy, easy, easy", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 79190, "rating": 5.0, "title": "Five Stars", "text": "timely and great feature for this particular purchase.  thank you very much.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 82438, "rating": 5.0, "title": "Quick & easy", "text": "Nice and useful feature", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 83542, "rating": 5.0, "title": "Five Stars", "text": "Great gift.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 96790, "rating": 5.0, "title": "Good", "text": "Good to use", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 97872, "rating": 5.0, "title": "we love ihop", "text": "great lightning deal", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 98960, "rating": 5.0, "title": "Great job Amazon", "text": "Takes up way less space in my wallet than 50 singles would. Great job Amazon!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 103402, "rating": 5.0, "title": "Awesome mom or grandma gift", "text": "This is an awesome gift if you have a mom or grandma addicted to QVC. Lol..my mom loves getting these", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 104214, "rating": 5.0, "title": "Great gift idea", "text": "The gift recipient was my friend who is getting married and she actually made a comment about how pretty the box was not knowing it was even an Amazon gift , only thing is the gift card wasn\u2019t where i", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 109243, "rating": 5.0, "title": "Fun chimney gift card and holder", "text": "Just what he asked for.  Nice presentation.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 109671, "rating": 5.0, "title": "Five Stars", "text": "A winner every time", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 121928, "rating": 5.0, "title": "Five Stars", "text": "Daughter loved it. Thank you for the opportunity", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 122700, "rating": 5.0, "title": "Fast & Easy", "text": "The process is simple and easy to use to convert your gift card to Amazons gift card.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 122927, "rating": 5.0, "title": "Money,value for the money!!", "text": "I really like the reload,I do most of my shopping on Amazon.Keep up the good work", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 131092, "rating": 5.0, "title": "Five Stars", "text": "Great", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 134288, "rating": 5.0, "title": "Gift Card Reload", "text": "Very easy and quick process.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 149274, "rating": 5.0, "title": "Five Stars", "text": "Nice", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}];
 var TOTAL=DATA.length;
+
+/* ---- Tabs ---- */
+var tabBtns=document.querySelectorAll('.tabbtn');
+tabBtns.forEach(function(btn){btn.addEventListener('click',function(){
+  tabBtns.forEach(function(b){b.classList.remove('active');b.setAttribute('aria-selected','false');});
+  document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');btn.setAttribute('aria-selected','true');
+  document.getElementById('tab-'+btn.getAttribute('data-tab')).classList.add('active');
+});});
+
+/* ---- Explorer ---- */
 function realCounts(){var o={all:TOTAL,ok:0,miss:0,pos:0,neu:0,neg:0};DATA.forEach(function(d){if(d.ok)o.ok++;else o.miss++;if(d.true==='POSITIVE')o.pos++;else if(d.true==='NEUTRAL')o.neu++;else o.neg++;});return o;}
 var rc=realCounts();
-
 function stars(r){var s='';for(var i=0;i<5;i++){s+=i<r?'&#9733;':'&#9734;';}return s;}
 function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function trunc(t){t=String(t||'');if(t.length<=110)return esc(t);return '<span class="short">'+esc(t.slice(0,110))+'&hellip;</span><span class="more" data-full="0">show all</span>';}
-function lbl(cls,row){var m={POSITIVE:'pos',NEUTRAL:'neu',NEGATIVE:'neg'};var k=m[cls]||'neu';var mis=(row&&!row.ok);return '<span class="lbl '+k+'">'+esc(cls)+'</span>'+( mis?' <span class="lbl neu">mis</span>':'');}
-function rowhtml(d){var mis=!d.ok;return '<tr class="'+(mis?'mismatch':'')+'">'+
+function lbl(cls,row){var m={POSITIVE:'pos',NEUTRAL:'neu',NEGATIVE:'neg'};var k=m[cls]||'neu';var mis=(row&&!row.ok);return '<span class="lbl '+k+'">'+esc(cls)+'</span>'+(mis?' <span class="lbl neu">mis</span>':'');}
+function rowhtml(d){var mis=!d.ok;return '<tr>'+
  '<td class="row">'+d.row+'</td>'+
  '<td class="stars"><span class="s">'+stars(d.rating)+'</span> '+d.rating.toFixed(1)+'</td>'+
  '<td class="title">'+esc(d.title)+'</td>'+
  '<td class="text">'+trunc(d.text)+'</td>'+
  '<td>'+lbl(d.pred,d)+'</td>'+
  '<td>'+lbl(d.true)+'</td></tr>';}
-
 var curF='all',q='',sortK='row',sortDir=1;
 var tbody=document.getElementById('rtbody'),filters=document.getElementById('filters'),
     sh=document.getElementById('countShown'),totalEl=document.getElementById('countTotal'),
