@@ -240,7 +240,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);color:v
       </div>
       <div class="lede">
         <h2>At a glance</h2>
-        <p>Judged on a balanced sample — one third of each class — the model is <b>78.7% accurate overall</b>. It is <b>strong at the two extremes</b> (positive 94%, negative 92%) and <b>improved in the middle</b>: it now keeps 25 of 50 true 3-star reviews (50%) as NEUTRAL, up from 18%.</p>
+        <p>Judged on a balanced sample — one third of each class — the model is <b>78.7% accurate overall</b>. It is <b>strong at the two extremes</b> (positive 94%, negative 92%) and <b>weakest in the middle</b>: it keeps 25 of 50 true 3-star reviews (50%) as NEUTRAL, with the rest leaning toward NEGATIVE.</p>
       </div>
     </div>
 
@@ -287,7 +287,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);color:v
   <!-- ============ CONFUSION ============ -->
   <section class="tabpanel" id="tab-confusion" role="tabpanel">
     <div class="sec-head"><h2>Right vs. wrong across all three classes</h2><span class="n">confusion matrix</span></div>
-    <p class="sec-sub">The diagonal (green) is where the model agreed with the rating. The largest off-diagonal block is now <strong>21 true NEUTRAL reviews the model called NEGATIVE</strong> — down from 32.</p>
+    <p class="sec-sub">The diagonal (green) is where the model agreed with the rating. The largest off-diagonal block is <strong>21 true NEUTRAL reviews the model called NEGATIVE</strong>.</p>
     <div class="cmatrix">
       <div></div>
       <div class="cm-colhdr">pred&nbsp;POSITIVE</div>
@@ -316,14 +316,14 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);color:v
     </div>
 
     <div class="observe hl" style="margin-top:22px">
-      <h3>NEUTRAL is still the weakest class — but much improved</h3>
-      <p>True 3-star reviews are kept as NEUTRAL <strong>50% of the time</strong> now (up from 18%). Of 50, the model keeps <strong>25 as NEUTRAL</strong>, moves <strong>21 to NEGATIVE</strong>, and <strong>4 to POSITIVE</strong>. The remaining misses still lean toward NEGATIVE — 3-star reviews often carry a reservation that the model reads as a complaint.</p>
+      <h3>NEUTRAL is the weakest class</h3>
+      <p>True 3-star reviews are kept as NEUTRAL <strong>50% of the time</strong>. Of 50, the model keeps <strong>25 as NEUTRAL</strong>, moves <strong>21 to NEGATIVE</strong>, and <strong>4 to POSITIVE</strong>. The misses lean toward NEGATIVE — 3-star reviews often carry a reservation that the model reads as a complaint.</p>
       <div class="big">25 kept NEUTRAL &nbsp;&middot;&nbsp; 21 &rarr; NEGATIVE &nbsp;&middot;&nbsp; 4 &rarr; POSITIVE</div>
     </div>
 
     <div class="observe warn">
       <h3>What the pattern adds up to</h3>
-      <p>The model still over-uses NEGATIVE, but far less than before. It now calls <strong>68</strong> reviews NEGATIVE (50 truly are) and <strong>31</strong> NEUTRAL (50 truly are). The middle class is where most remaining errors live, but the gap has narrowed substantially.</p>
+      <p>The model over-uses NEGATIVE. It calls <strong>68</strong> reviews NEGATIVE (50 truly are) and <strong>31</strong> NEUTRAL (50 truly are). The middle class is where most errors live.</p>
     </div>
 
     <div class="sec-head" style="margin-top:26px"><h2>Examples of the middle-class errors</h2><span class="n">true 3-star</span></div>
@@ -371,7 +371,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);color:v
         <div class="row"><span class="name">NEUTRAL</span><div class="track"><div class="fill true-neu" style="width:74%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neu" style="width:46%"></div></div><span class="num"><b>31</b></span></div>
         <div class="row"><span class="name">NEGATIVE</span><div class="track"><div class="fill true-neg" style="width:74%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neg" style="width:100%"></div></div><span class="num"><b>68</b></span></div>
         <legend><span class="l-t">true (correct answer)</span><span class="l-p">predicted</span></legend>
-        <div class="desc-lbl"><b>Over &amp; under (narrowed):</b> the model says NEGATIVE 68 times where 50 are truly negative, and NEUTRAL 31 times where 50 actually are. After tuning, its over-use of NEGATIVE has fallen sharply.</div>
+        <div class="desc-lbl"><b>Over &amp; under:</b> the model says NEGATIVE 68 times where 50 are truly negative, and NEUTRAL 31 times where 50 actually are. The failures are systematic, not random.</div>
       </div>
     </div>
 
@@ -383,7 +383,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);color:v
         <div class="r nneu"><span class="name">NEUTRAL</span><div class="stack"><div class="ok" style="width:50%"></div><div class="bad" style="width:50%"></div></div><div class="meta"><b>50%</b> &middot; 25/50</div></div>
         <div class="r"><span class="name">NEGATIVE</span><div class="stack"><div class="ok" style="width:92%"></div><div class="bad" style="width:8%"></div></div><div class="meta"><b>92%</b> &middot; 46/50</div></div>
       </div>
-      <div class="desc-lbl">The model is strong on the two extremes and improved in the middle: NEUTRAL rose from 18% to 50%. It remains the main area of error, but the gap to the other classes has narrowed.</div>
+      <div class="desc-lbl">The model is strong on the two extremes and weak in the middle — the NEUTRAL class is its main area of error.</div>
     </div>
   </section>
 
