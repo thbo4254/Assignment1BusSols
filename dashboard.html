@@ -104,7 +104,7 @@ section{margin-bottom:38px}
 .callout.crit{background:var(--neg-soft);border-left:3px solid var(--neg)}
 .callout.crit h3{color:var(--neg)}
 
-/* ===== Step 7: descriptive visualization layer ===== */
+/* ===== Descriptive visualization layer ===== */
 .descgrid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:26px}
 .descpanel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px 24px}
 .descpanel h3{margin:0 0 4px;font-size:14px;color:var(--ink-strong)}
@@ -158,7 +158,7 @@ section{margin-bottom:38px}
 .errcard .fix{margin-top:12px;font-size:12px;color:var(--ink-muted)}
 .errcard .fix b{color:var(--ink)}
 
-/* explorer (Step 4, reused) */
+/* review explorer */
 .explore{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
 .explore .toolbar{padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:14px;align-items:center}
 .filters{display:flex;gap:8px;flex-wrap:wrap}
@@ -200,7 +200,7 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
 
   <header class="masthead">
     <div>
-      <div class="kicker">Step 6 &middot; Three-class report</div>
+      <div class="kicker">Three-class report</div>
       <h1>Amazon Review Sentiment Model</h1>
       <div class="sub">Classifying Gift&nbsp;Card reviews as <strong>POSITIVE / NEUTRAL / NEGATIVE</strong> from <strong>title + text only</strong>, judged against the rating. <strong>Balanced sample</strong> — a roughly equal number from each class, drawn from the whole file with a fixed seed.</div>
     </div>
@@ -224,7 +224,7 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
       <p>
         On a <strong>balanced</strong> sample — one-third of each class — the model is
         <strong>70% accurate overall</strong>, far below the 98% it looked like on the
-        skewed Step&nbsp;2 batch. The honest story: it's <strong>excellent on the ends</strong>
+        skewed <em>earlier</em> batch. The honest story: it's <strong>excellent on the ends</strong>
         (94% positive, 98% negative) but the new <strong>NEUTRAL class largely collapses</strong> —
         it keeps only 18% of true 3-star reviews, shoving most of them into NEGATIVE.
       </p>
@@ -287,7 +287,7 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
     </div>
   </section>
 
-  <!-- Desc      -- The descriptive layer (Step 7) -->
+  <!-- Descriptive layer -->
   <section>
     <div class="sec-head"><h2>Descriptive view: where it succeeds and fails</h2><span class="n">at a glance</span></div>
     <p class="sec-sub">Three read-only pictures of the balanced sample. Everything is on the page — no drilling required — so a reader can see the model's success and its failures without interacting.</p>
@@ -361,8 +361,8 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
   <section>
     <div class="sec-head"><h2>What the balanced run revealed that the imbalanced one hid</h2><span class="n">before / after</span></div>
     <div class="cmprec">
-      <div class="cmp"><h3>Step 2 (imbalanced 100)</h3><div class="metrics">Overall <b>98%</b><br>POS 97.7% &middot; NEG 100%<br>NEUTRAL: not tested</div><div class="note">represents real-world mix: 88% positive</div></div>
-      <div class="cmp"><h3>Step 6 (balanced 150)</h3><div class="metrics">Overall <b>70%</b><br>POS 94% &middot; NEU 18% &middot; NEG 98%<br>baseline 33%</div><div class="note">one-third each class &mdash; exposes the weak middle</div></div>
+      <div class="cmp"><h3>Imbalanced sample (100)</h3><div class="metrics">Overall <b>98%</b><br>POS 97.7% &middot; NEG 100%<br>NEUTRAL: not tested</div><div class="note">represents real-world mix: 88% positive</div></div>
+      <div class="cmp"><h3>Balanced sample (150)</h3><div class="metrics">Overall <b>70%</b><br>POS 94% &middot; NEU 18% &middot; NEG 98%<br>baseline 33%</div><div class="note">one-third each class &mdash; exposes the weak middle</div></div>
       <div class="cmp"><h3>What the skew hid</h3><div class="metrics">+28pt illusion<br><b>98% &rarr; 70%</b><br>NEUTRAL &asymp; collapses</div><div class="note">the 98% was partly the easy-positive majority; the real weakness is in the middle of the rating scale</div></div>
     </div>
   </section>
