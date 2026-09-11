@@ -58,8 +58,14 @@ purchase is NEGATIVE.
    - Neutral / mixed / undecided reviews MUST still be resolved to POSITIVE or \
 NEGATIVE — there is no third option, so lean on the dominant directional signal.
 
-Respond with ONLY a single JSON object in exactly this format, and nothing else:
-{"label": "POSITIVE"}   or   {"label": "NEGATIVE"}"""
+Respond with ONLY a single JSON object in exactly this format, and nothing else.
+The "label" is the sentiment verdict; the "emotion" is the single primary emotion
+you detect most strongly in the review, chosen from exactly this set:
+anger, anticipation, disgust, fear, joy, sadness, surprise, trust.
+{"label": "POSITIVE", "emotion": "joy"}   or   {"label": "NEGATIVE", "emotion": "fear"}
+
+Always include both keys, even if the emotion is weak — pick the strongest of the
+eight. If truly undecided, fall back to "trust" for positive or "fear" for negative."""
 
 
 def build_user_prompt(title: str | None, text: str | None) -> str:
@@ -78,11 +84,15 @@ def build_user_prompt(title: str | None, text: str | None) -> str:
         review_block = review_block.rstrip()
 
     return (
-        "Classify the sentiment of the following Amazon review. Consider the "
-        "emotional tone of both the title and the body, then decide whether the "
-        "overall sentiment is POSITIVE or NEGATIVE.\n\n"
+        "Classify the sentiment of the following Amazon review and detect its "
+        "primary emotion. Consider the emotional tone of both the title and the "
+        "body, then decide the overall sentiment (POSITIVE or NEGATIVE) and the "
+        "single strongest emotion chosen from: anger, anticipation, disgust, "
+        "fear, joy, sadness, surprise, trust.\n\n"
         f"{review_block}\n\n"
-        'Reply with a single JSON object: {"label": "POSITIVE"} or {"label": "NEGATIVE"}.'
+        'Reply with a single JSON object, e.g. {"label": "POSITIVE", '
+        '"emotion": "joy"} or {"label": "NEGATIVE", "emotion": "fear"} — '
+        "include BOTH keys."
     )
 
 
@@ -107,10 +117,19 @@ MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 # ---------------------------------------------------------------------------
 
 _LABEL_RE = re.compile(r'"label"\s*:\s*"?(POSITIVE|NEGATIVE)"?', re.IGNORECASE)
+_EMOTION_RE = re.compile(r'"emotion"\s*:\s*"([a-zA-Z]+)"')
+EMOTIONS = ["anger", "anticipation", "disgust", "fear", "joy", "sadness",
+            "surprise", "trust"]
 
 
 def classify_review(title: str | None, text: str | None, *, cl=None, model: str | None = None) -> Label:
     """Classify a single review. Returns 'POSITIVE' or 'NEGATIVE'."""
+    return classify_with_emotion(title, text, cl=cl, model=model)[0]
+
+
+def classify_with_emotion(title: str | None, text: str | None, *, cl=None,
+                          model: str | None = None) -> tuple[Label, str]:
+    """Classify a review and detect its primary emotion — (label, emotion)."""
     cl = cl or client()
     model = model or MODEL
     messages = [
@@ -119,7 +138,22 @@ def classify_review(title: str | None, text: str | None, *, cl=None, model: str 
     ]
     resp = cl.chat.completions.create(model=model, messages=messages, temperature=0)
     answer = resp.choices[0].message.content or ""
-    return parse_label(answer)
+    return parse_label(answer), parse_emotion(answer)
+
+
+def parse_emotion(raw: str) -> str:
+    """Extract the primary emotion from a model reply, tolerating prose."""
+    raw = raw.strip()
+    m = _EMOTION_RE.search(raw)
+    if m:
+        return m.group(1).lower()
+    # Fallback: any NRC emotion word appearing in the reply.
+    found = [e for e in EMOTIONS if re.search(rf"\b{e}\b", raw, re.IGNORECASE)]
+    if found:
+        # Return the one that appears last in the reply (most likely the stated answer).
+        last = max(found, key=lambda e: raw.lower().rfind(e))
+        return last
+    raise ValueError(f"Could not parse an emotion from model reply: {raw!r}")
 
 
 def parse_label(raw: str) -> Label:
