@@ -1,0 +1,101 @@
+row,rating,true_label,title,text,llm_label,llm_emotion,nrc_emotion,nrc_scores,agree,llm_label_correct
+1,4.0,POSITIVE,Great gift,When you don’t know what to get,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1, ""trust"": 1}",False,True
+2,5.0,POSITIVE,Got it when it said,Nice delivery and fast. Hope the mom-to-be has no problems with it🤰 🙅💆🙎🙇.,POSITIVE,joy,anticipation,"{""anticipation"": 2, ""joy"": 1, ""surprise"": 1, ""trust"": 1}",False,True
+3,1.0,NEGATIVE,not happy my 2% credit didn't automatically apply,"had to call customer services, very very annoying",NEGATIVE,anger,trust,"{""anticipation"": 1, ""joy"": 1, ""trust"": 2, ""anger"": 1}",False,True
+4,5.0,POSITIVE,Amazon Gift Cards Did All The Work,No need to guess what anyone wants. Everyone shops at Amazon and you will get it right every time by letting loved ones purchase exactly what they want or need. I was off the shopping hook at the push,POSITIVE,joy,anticipation,"{""anticipation"": 3, ""joy"": 2, ""surprise"": 3, ""trust"": 1}",False,True
+5,5.0,POSITIVE,Helpful,Great,POSITIVE,joy,joy,"{""joy"": 1, ""trust"": 1}",True,True
+6,5.0,POSITIVE,Great,Pick a game,POSITIVE,joy,,{},False,True
+7,5.0,POSITIVE,Five Stars,"Fast and easy, thanks",POSITIVE,joy,,{},False,True
+8,5.0,POSITIVE,Staff loved them,Great gift everybody loves Amazon,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+9,5.0,POSITIVE,An easy way to buy tasty donuts,I bought this the day after Thanksgiving. It arrived in a few days and worked at my local Krispy Kreme. An easy gift for the donut lover. An easy way to get tasty donuts!,POSITIVE,joy,joy,"{""joy"": 3, ""anticipation"": 2, ""surprise"": 1, ""trust"": 1}",True,True
+10,5.0,POSITIVE,Beautiful case for your gift card,Awesome case to put the gift card in.  Don't even  have to wrap it.,POSITIVE,joy,joy,"{""joy"": 3, ""fear"": 2, ""sadness"": 2, ""anticipation"": 2, ""surprise"": 2}",True,True
+11,5.0,POSITIVE,Gift card reviews are weird unless they go wrong,"We bought this for my mom, she used it, no problem.<br /><br />We've had an issue with a recent kind of multiple restaurant card where the restaurants weren't all part of the same ownership group you ",POSITIVE,trust,joy,"{""anticipation"": 2, ""joy"": 3, ""surprise"": 1, ""disgust"": 2, ""fear"": 1, ""sadness"": 1, ""trust"": 2}",False,True
+12,5.0,POSITIVE,Perfect way to use odd balances on prepaid cards,"I often use Amazon's Gift Card Balance Reload to finish the remaining balances on any prepaid debit cards I have. Those cards come from many sources these days, such as rebates, promotional offers, an",POSITIVE,joy,joy,"{""anticipation"": 2, ""joy"": 3, ""trust"": 1, ""surprise"": 1, ""fear"": 2, ""disgust"": 1}",True,True
+13,4.0,POSITIVE,It reloaded,It reloaded,POSITIVE,trust,,{},False,True
+14,5.0,POSITIVE,Just like getting free money!,I will take a $50 gift card for $40 any day!!! Basically $10 for free. Love it.,POSITIVE,joy,joy,"{""anger"": 1, ""anticipation"": 2, ""joy"": 3, ""surprise"": 2, ""trust"": 1}",True,True
+15,5.0,POSITIVE,"Beautiful high-quality packaging, perfect gift for grads!",It's an Amazon gift card in a high-quality gift box that looks like a graduation cap. It makes an excellent gift!,POSITIVE,joy,joy,"{""joy"": 8, ""anticipation"": 7, ""trust"": 4, ""surprise"": 5, ""fear"": 1}",True,True
+16,5.0,POSITIVE,Five Stars,Awsome,POSITIVE,joy,,{},False,True
+17,5.0,POSITIVE,Love it!,This is great! I hope Amazon does this every year. I would definitely collect one every year,POSITIVE,joy,joy,"{""joy"": 2, ""anticipation"": 1, ""surprise"": 1, ""trust"": 1}",True,True
+18,5.0,POSITIVE,A go to gift card.,Everyone loves Amazon. An Amazon gift card fits any ocasion and celebration.,POSITIVE,joy,anticipation,"{""anticipation"": 3, ""joy"": 3, ""surprise"": 3, ""anger"": 1, ""trust"": 1}",False,True
+19,5.0,POSITIVE,It works and I got some free cash out of it,It worked fine!,POSITIVE,joy,anger,"{""anger"": 1, ""anticipation"": 1, ""fear"": 1, ""joy"": 1, ""trust"": 1}",False,True
+20,5.0,POSITIVE,Five Stars,"What can one say, they are a gift card and it works.",POSITIVE,trust,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+21,4.0,POSITIVE,Easy,Easy,POSITIVE,joy,,{},False,True
+22,5.0,POSITIVE,Pretty much perfct,"It's a gift card. It's worth what I paid for it. It has no activation fees or expiration date and it doesn't lose its value if not used. Pretty much perfct, as far as gift cards go.",POSITIVE,joy,anticipation,"{""anticipation"": 4, ""joy"": 4, ""trust"": 2, ""surprise"": 3, ""anger"": 1, ""disgust"": 1, ""fear"": 1, ""sadness"": 1}",False,True
+23,5.0,POSITIVE,Gifted,It’s a gift card,POSITIVE,trust,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+24,5.0,POSITIVE,Five Stars,So far I am a fan of Amazon,POSITIVE,joy,,{},False,True
+25,5.0,POSITIVE,Amazing Deal,I got this card as a new customer so it was a great deal.  I put $100 on the card and got $125 to spend!,POSITIVE,joy,anticipation,"{""anticipation"": 2, ""joy"": 2, ""surprise"": 2, ""trust"": 2}",False,True
+26,5.0,POSITIVE,Five Stars,Given as a Christmas present,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1, ""trust"": 1}",False,True
+27,5.0,POSITIVE,Quick Service Happy with everything.,Everything was quick and easy to order.,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""trust"": 1}",False,True
+28,5.0,POSITIVE,Five Stars,"Great, simple gift.",POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+29,5.0,POSITIVE,as described,bought for my mother and came quickly :) would buy again,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""sadness"": 1, ""trust"": 1}",False,True
+30,5.0,POSITIVE,Five Stars,Nice 20% discount.,POSITIVE,joy,,{},False,True
+31,5.0,POSITIVE,Like,My daughter loved this as a gift. Came in fast and I had no problems,POSITIVE,joy,joy,"{""joy"": 2, ""anticipation"": 1, ""surprise"": 1}",True,True
+32,5.0,POSITIVE,Easy gift when you don't know what to give.,"Christmas gifts,",POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+33,5.0,POSITIVE,Reloadable gift card,Easy to load and use.,POSITIVE,trust,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+34,5.0,POSITIVE,Love it,Incredible,POSITIVE,joy,joy,"{""joy"": 1}",True,True
+35,4.0,POSITIVE,"Great idea, nice design.","Well, I ordered this card specifically for how the box looked.  It was secured in a plastic bag....and whoever packaged it just shoved it in, and the bow was messed up.  I had to get my curling iron a",NEGATIVE,anger,anger,"{""trust"": 2, ""anger"": 2, ""disgust"": 1, ""fear"": 1, ""sadness"": 1}",True,False
+36,5.0,POSITIVE,Nice!,Gave as gifts and loved the presentation!,POSITIVE,joy,,{},False,True
+37,5.0,POSITIVE,Easy and fast,Easy and fast,POSITIVE,joy,,{},False,True
+38,5.0,POSITIVE,Amazon,It's a gift card.,POSITIVE,trust,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+39,5.0,POSITIVE,Five Stars,Great gift,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+40,5.0,POSITIVE,Gift Card,Everyone loves Amazon gift cards!  Easy to use!  Box is reusable for any small gift!,POSITIVE,joy,anticipation,"{""anticipation"": 3, ""joy"": 3, ""surprise"": 3}",False,True
+41,4.0,POSITIVE,It's a gift card,Just what I wanted,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+42,5.0,POSITIVE,Easy to use,Very convenient,POSITIVE,joy,,{},False,True
+43,5.0,POSITIVE,Five Stars,easy to use,POSITIVE,joy,,{},False,True
+44,5.0,POSITIVE,It was easy to do.,I liked the ease of doing it.,POSITIVE,joy,,{},False,True
+45,5.0,POSITIVE,great gifts.,Thank you!,POSITIVE,joy,,{},False,True
+46,5.0,POSITIVE,Convenient Gift Card for Kindle Reader,Very attractive packaging!,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+47,5.0,POSITIVE,Five Stars,Good product!,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1, ""trust"": 1}",False,True
+48,5.0,POSITIVE,Nice box and makes a nice-looking gift.,Liked it all. So did the 4 recipients of all the boxes I bought.,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+49,5.0,POSITIVE,Great foe mailing,Nice n compact,POSITIVE,joy,anger,"{""anger"": 1, ""fear"": 1, ""trust"": 1}",False,True
+50,5.0,POSITIVE,Exactly as advertised,Great,POSITIVE,joy,,{},False,True
+51,5.0,POSITIVE,A great gift!,Arrived on time and was as advertised.,POSITIVE,joy,anticipation,"{""anticipation"": 2, ""joy"": 1, ""surprise"": 1}",False,True
+52,5.0,POSITIVE,Sometimes I use this as cache money for the gift purchases,Sometimes I use this as cache money for the gift purchases. Vert seamless to buy it online.,POSITIVE,trust,anticipation,"{""anger"": 2, ""anticipation"": 4, ""joy"": 4, ""surprise"": 4, ""trust"": 2}",False,True
+53,5.0,POSITIVE,Five Stars,It's a gift card? What can I review about that hah.<br />It was delivered fast.,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+54,5.0,POSITIVE,Five Stars,reloading is so easily and the money  is applied immediately,POSITIVE,joy,anticipation,"{""anger"": 1, ""anticipation"": 2, ""joy"": 1, ""surprise"": 1, ""trust"": 1}",False,True
+55,5.0,POSITIVE,Perfect for graduation!!!,Great gift box for gift card!!,POSITIVE,joy,anticipation,"{""anticipation"": 4, ""joy"": 4, ""trust"": 2, ""fear"": 1, ""surprise"": 3}",False,True
+56,5.0,POSITIVE,Its a Gift Card,"What can I say about a gift card.  It works, it was exactly what I expected, and I would purchase again.",POSITIVE,trust,anticipation,"{""anticipation"": 3, ""joy"": 2, ""surprise"": 2}",False,True
+57,5.0,POSITIVE,So Easy,I always try to keep money already loaded so I always have money when I want to shop.,POSITIVE,joy,anger,"{""anger"": 2, ""anticipation"": 2, ""joy"": 2, ""surprise"": 2, ""trust"": 2}",False,True
+58,1.0,NEGATIVE,False information,web page details are inaccurate and misleading,NEGATIVE,anger,anger,"{""anger"": 1, ""disgust"": 1}",True,True
+59,1.0,NEGATIVE,Didn’t work,None of the cards worked in the Starbucks ap or at Starbucks stores,NEGATIVE,anger,,{},False,True
+60,5.0,POSITIVE,Great Idea!,great idea! feels like money in the bank earning interest.,POSITIVE,joy,trust,"{""anger"": 1, ""anticipation"": 1, ""joy"": 1, ""surprise"": 1, ""trust"": 2}",False,True
+61,5.0,POSITIVE,Cute Snowflake design.,Nice Snowflake design so didn't need to wrap it or anything else. Perfect gift box.,POSITIVE,joy,anticipation,"{""anticipation"": 2, ""joy"": 2, ""trust"": 1, ""surprise"": 1}",False,True
+62,5.0,POSITIVE,What to give to the person you do not know very well.,Almost all my friends buy at Amazon. I do too! I always seem to find things I want when I do not have the cash to make a purchase. Amazon gift cards meet my needs and the needs of my friends.,POSITIVE,joy,anticipation,"{""anger"": 1, ""anticipation"": 2, ""fear"": 1, ""joy"": 2, ""trust"": 1, ""surprise"": 1}",False,True
+63,5.0,POSITIVE,Five Stars,Kids loved,POSITIVE,joy,,{},False,True
+64,5.0,POSITIVE,Great Idea,Great gift,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+65,5.0,POSITIVE,Budget,"I use the reloaded gift card a budgeting tool for myself. Let be honest, I know I'm not the only one with a cart total close to one million lol.",POSITIVE,joy,joy,"{""trust"": 2, ""anticipation"": 1, ""joy"": 2, ""surprise"": 1, ""anger"": 1, ""disgust"": 1, ""fear"": 1, ""sadness"": 1}",True,True
+66,1.0,NEGATIVE,Be ware!!,Don’t buy. They activate the cards and them they desactivate it. $600 to trash.,NEGATIVE,anger,disgust,"{""fear"": 1, ""trust"": 1, ""disgust"": 1, ""sadness"": 1}",False,True
+67,5.0,POSITIVE,"Nice tin, very appropriate","I bought these for my nieces, they loved them. Nice design for the tin.",POSITIVE,joy,,{},False,True
+68,4.0,POSITIVE,Nice gift card,Arrived quickly. Looks nice except the cutout on the back of the tin- you see a barcode not Merry Christmas so the picture is misleading. You could flip the gift card over but then it would look silly,NEGATIVE,sadness,joy,"{""anticipation"": 2, ""joy"": 4, ""surprise"": 2, ""anger"": 1, ""disgust"": 1}",False,False
+69,5.0,POSITIVE,Good quality!,Got what I expected.,POSITIVE,trust,anticipation,"{""anticipation"": 2, ""joy"": 1, ""surprise"": 1, ""trust"": 1}",False,True
+70,5.0,POSITIVE,It's a gift certificate,Easy to use,POSITIVE,trust,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+71,5.0,POSITIVE,No problems!,Card worked fine!,POSITIVE,joy,,{},False,True
+72,5.0,POSITIVE,Five Stars,convenience,POSITIVE,joy,,{},False,True
+73,1.0,NEGATIVE,Nominations,"So incredibly stupid, they sent me two cars they were both different nominations it does not tell you which one is which value. Told you to look up the serial number but she was no serial number anywh",NEGATIVE,anger,anticipation,"{""anticipation"": 2}",False,True
+74,5.0,POSITIVE,Good feature.,Needed to add to my order balance and this helps reach that order balance immediately.  Good feature.,POSITIVE,joy,anticipation,"{""anticipation"": 3, ""joy"": 2, ""surprise"": 2, ""trust"": 2}",False,True
+75,5.0,POSITIVE,Great.,I used it today and it is accepted. Great.,POSITIVE,joy,,{},False,True
+76,3.0,NEGATIVE,Supposed to be ready to use.,"Purchased two of these as a gift for my daughter. Assumed them to be 'ready to use' since there were no instructions to activate, secure a PIN or anything else. Daughter said she could not use them wh",NEGATIVE,sadness,anticipation,"{""anticipation"": 5, ""joy"": 4, ""surprise"": 2, ""trust"": 2}",False,True
+77,5.0,POSITIVE,It's a gift card in nice packaging with no overhead cost to the consumer,"It's a gift card in nice packaging with no overhead cost to the consumer. Fairly common practice, but a nice touch -- however the box does ruin the surprise!",POSITIVE,joy,joy,"{""anticipation"": 2, ""joy"": 3, ""surprise"": 3, ""trust"": 1, ""fear"": 2, ""sadness"": 1}",True,True
+78,1.0,NEGATIVE,I can't figure out how to use it! I ...,I can't figure out how to use it! I was trying to use it for some Kindle purchases. I hope I can figure it out on my next try.,NEGATIVE,anger,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1, ""trust"": 1}",False,True
+79,5.0,POSITIVE,Five Stars,My son liked his gift card.,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+80,4.0,POSITIVE,Four Stars,Works as advertised.,POSITIVE,trust,,{},False,True
+81,4.0,POSITIVE,Watch what you are buying,Product was not what I expected. I wanted to get Ebay cards and not visa debit cards. Lesson learned.,NEGATIVE,sadness,anticipation,"{""anticipation"": 3, ""fear"": 1, ""trust"": 1}",False,False
+82,5.0,POSITIVE,Unique gift,Perfect Birthday gift and so cute!,POSITIVE,joy,anticipation,"{""surprise"": 4, ""anticipation"": 4, ""joy"": 4, ""trust"": 1}",False,True
+83,5.0,POSITIVE,Easy to Order,This made a good Christmas present for my wife.,POSITIVE,joy,anticipation,"{""anticipation"": 2, ""joy"": 2, ""surprise"": 2, ""trust"": 2}",False,True
+84,5.0,POSITIVE,Five Stars,perfect for a gift card,POSITIVE,joy,anticipation,"{""anticipation"": 2, ""joy"": 2, ""trust"": 1, ""surprise"": 1}",False,True
+85,5.0,POSITIVE,Works great,Card was bent when it came in but it was acceptable. The card worked perfectly and my sister appreciated it.,POSITIVE,joy,,{},False,True
+86,5.0,POSITIVE,"First introduced to this restaurant in Asheville, N. C.","I gave this one to me!  Like it quite well and am holding it for a special time.  If I get only one of these next holiday, it will be mine.",POSITIVE,joy,anticipation,"{""joy"": 2, ""anticipation"": 2}",False,True
+87,5.0,POSITIVE,Awsome,Super easy to add to your account!,POSITIVE,joy,trust,"{""trust"": 1}",False,True
+88,5.0,POSITIVE,Five Stars,It was easy to do!,POSITIVE,joy,,{},False,True
+89,3.0,NEGATIVE,Or if I earned more coins per purchase that would be great as well,I wish the discount was higher. I would purchase more coins.  Or if I earned more coins per purchase that would be great as well.,POSITIVE,anticipation,,{},False,False
+90,5.0,POSITIVE,everyone loves gift cards!,What is there to say.. Game Stop gift cards are awesome! :),POSITIVE,joy,anticipation,"{""anticipation"": 2, ""joy"": 2, ""surprise"": 2}",False,True
+91,5.0,POSITIVE,Five Stars,it is really great,POSITIVE,joy,,{},False,True
+92,5.0,POSITIVE,Make your Benifit from your money!,"It saves few money from my spending, I really like it when I use it.",POSITIVE,joy,anger,"{""anger"": 2, ""anticipation"": 2, ""joy"": 2, ""surprise"": 2, ""trust"": 2}",False,True
+93,1.0,NEGATIVE,Might be lost,"Note came from Amazon ""might/may be lost"", so big disappointment to my intended recipient; I have asked for refund.",NEGATIVE,sadness,sadness,"{""sadness"": 3, ""disgust"": 1, ""anticipation"": 2}",True,True
+94,1.0,NEGATIVE,Gift card compromised!!!,Bought this gift card from Amazon for my daughter for Christmas! $110 worth of charges magically appeared. I will never buy another gift card from Amazon again. Contacted them and got zero response.,NEGATIVE,anger,joy,"{""anticipation"": 3, ""joy"": 4, ""surprise"": 3}",False,True
+95,5.0,POSITIVE,Five Stars,It did,POSITIVE,joy,,{},False,True
+96,5.0,POSITIVE,Five Stars,perfect,POSITIVE,joy,anticipation,"{""anticipation"": 1, ""joy"": 1, ""trust"": 1}",False,True
+97,1.0,NEGATIVE,Invalid,Code didn’t work. Didn’t take certain letters in the code for redemption. Lesson learned no longer purchasing gift cards online.,NEGATIVE,anger,anticipation,"{""sadness"": 1, ""anticipation"": 2, ""trust"": 1, ""joy"": 1, ""surprise"": 1}",False,True
+98,1.0,NEGATIVE,This card wasn't activated prior to sending it to us.  It won't work,The card needs to be activated prior to sending it and it wasn't.  We can't redeem the card.,NEGATIVE,anger,,{},False,True
+99,5.0,POSITIVE,Gift card,Gift card,POSITIVE,trust,anticipation,"{""anticipation"": 2, ""joy"": 2, ""surprise"": 2}",False,True
+100,5.0,POSITIVE,"""CONVENIENCE"" SPENDING""",I found it very convenient💲!,POSITIVE,joy,joy,"{""joy"": 1, ""trust"": 1}",True,True

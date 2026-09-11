@@ -14,17 +14,13 @@ __pycache__/
 Gift_Cards.jsonl.gz
 *.jsonl.gz
 
-# --- Runtime outputs / caches (intermediate runs kept out; evidence kept in) ---
-batch_scores.csv
+# --- Runtime caches / intermediate sample index files (evidence CSVs are kept) ---
 batch_samples.txt
 *.sqlite
 *.sqlite3
 *.log
-step6_scores.csv
 step6_sample.txt
-step6_emotion.csv
 step6_tuned_sample.txt
-step5_emotion.csv
 
 # --- macOS ---
 .DS_Store
