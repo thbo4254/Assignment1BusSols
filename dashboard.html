@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon Review Sentiment — Model Report</title>
+<style>
+/* ============================================================
+   THEME TOKENS — the host recolors the whole report by editing
+   these CSS custom properties. Everything below inherits.
+   ============================================================ */
+:root{
+  /* Surface & neutrals */
+  --bg:          #f5f3ee;
+  --surface:     #ffffff;
+  --surface-2:   #fbfaf7;
+  --ink:         #1c1a17;
+  --ink-strong:  #000000;
+  --ink-muted:   #6b675f;
+  --ink-faint:   #9b968c;
+  --line:        #e6e2d8;
+  --line-strong: #d5d0c2;
+
+  /* Accent (brand) */
+  --accent:      #c8512c;   /* warm terracotta — brand hue */
+  --accent-ink:  #ffffff;
+  --accent-soft: #f6e3da;
+
+  /* Class semantics */
+  --pos:      #4a7c4a;   /* positive green */
+  --pos-soft: #e6efe6;
+  --neg:      #a5442f;   /* negative red   */
+  --neg-soft: #f6e3de;
+  --warn:     #b8862b;
+  --warn-soft:#f5ecdb;
+
+  /* Type */
+  --font-sans: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
+
+  /* Radii & elevation */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --shadow: 0 1px 2px rgba(28,26,22,.05), 0 8px 24px rgba(28,26,22,.05);
+}
+html[data-theme="dark"]{
+  --bg:#17150f; --surface:#201d16; --surface-2:#262219;
+  --ink:#eae6dc; --ink-strong:#ffffff; --ink-muted:#a29c8e; --ink-faint:#6f6a5e;
+  --line:#3a362b; --line-strong:#4a4538;
+  --accent:#df7a52; --accent-ink:#16130e; --accent-soft:#3a241a;
+  --pos:#7fae7f; --pos-soft:#243220; --neg:#d07a62; --neg-soft:#3c221b;
+  --warn:#cfaa63; --warn-soft:#372f1c;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 28px 80px}
+
+/* ---- Header ---- */
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;
+  gap:24px;padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:30px}
+.masthead .kicker{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);font-weight:600;margin-bottom:8px}
+h1{margin:0;font-size:27px;line-height:1.12;letter-spacing:-.01em;color:var(--ink-strong)}
+.sub{color:var(--ink-muted);margin-top:8px;font-size:13.5px}
+.meta{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);
+  text-align:right;line-height:1.7;white-space:nowrap}
+.meta b{color:var(--ink-muted);font-weight:600}
+.recolor{padding:6px 10px;border:1px solid var(--line-strong);background:var(--surface);
+  color:var(--ink);border-radius:var(--r-sm);font-family:var(--font-sans);
+  font-size:12px;cursor:pointer;margin-top:8px}
+.recolor:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---- Headline band ---- */
+.headline{display:grid;grid-template-columns:240px 1fr;gap:26px;align-items:stretch;
+  margin-bottom:26px}
+.bigstat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow);padding:24px 26px;display:flex;flex-direction:column;justify-content:center}
+.bigstat .value{font-size:58px;font-weight:700;letter-spacing:-.03em;color:var(--accent);
+  line-height:1;font-variant-numeric:tabular-nums}
+.bigstat .num{font-size:22px;color:var(--ink-strong);margin-top:2px}
+.bigstat .cap{font-size:12.5px;color:var(--ink-muted);margin-top:10px;max-width:200px;line-height:1.4}
+.headline .verdict{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow);padding:22px 24px;display:flex;flex-direction:column;justify-content:center}
+.headline .verdict h2{margin:0 0 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-muted);font-weight:600}
+.headline .verdict p{margin:0;font-size:14.5px;color:var(--ink)}
+.rule-glyph{color:var(--warn);font-weight:700}
+
+/* ---- Grid of mini panels ---- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:18px 18px 16px;box-shadow:var(--shadow)}
+.kpi .label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);
+  font-weight:600;margin-bottom:8px}
+.kpi .num{font-size:26px;font-weight:700;color:var(--ink-strong);line-height:1;font-variant-numeric:tabular-nums}
+.kpi .num small{font-size:14px;color:var(--ink-muted);font-weight:600}
+.kpi .hint{font-size:12px;color:var(--ink-muted);margin-top:7px}
+.kpi.pos .num{color:var(--pos)} .kpi.neg .num{color:var(--neg)} .kpi.warn .num{color:var(--warn)}
+
+/* ---- Section ---- */
+section{margin-bottom:38px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.sec-head h2{margin:0;font-size:16px;color:var(--ink-strong);letter-spacing:-.01em}
+.sec-head .n{font-family:var(--font-mono);color:var(--ink-faint);font-size:12px}
+.sec-sub{color:var(--ink-muted);font-size:13px;margin:-6px 0 16px;max-width:72ch}
+
+/* ---- Confusion matrix ---- */
+.cmatrix{display:grid;grid-template-columns:auto auto auto;gap:10px;align-items:center;
+  justify-content:start}
+.cm-label{font-size:12px;color:var(--ink-muted);align-self:end;padding-bottom:6px}
+.cm-label.right{text-align:right;padding-right:4px}
+.cm-cell{border-radius:var(--r-md);padding:16px 22px;text-align:center;min-width:150px}
+.cm-cell .v{font-size:34px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.cm-cell .d{font-size:11.5px;margin-top:6px;color:inherit;opacity:.85}
+.cm-tp{background:var(--pos-soft);color:var(--pos);border:1px solid transparent}
+.cm-tn{background:var(--pos-soft);color:var(--pos);border:1px solid transparent}
+.cm-fp{background:var(--neg-soft);color:var(--neg);border:1px solid transparent}
+.cm-fn{background:var(--neg-soft);color:var(--neg);border:1px solid transparent}
+.cm-rowlab{font-size:11.5px;color:var(--ink-muted);font-weight:600;align-self:center;white-space:nowrap}
+.cm-legend{grid-column:1/4;margin-top:6px;color:var(--ink-muted);font-size:12px;display:flex;gap:18px;flex-wrap:wrap}
+.cm-legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.cm-legend .l-pos:before{background:var(--pos)} .cm-legend .l-neg:before{background:var(--neg)}
+
+/* ---- Per-class accuracy bars ---- */
+.classlines{display:flex;flex-direction:column;gap:18px}
+.cl-row{display:grid;grid-template-columns:110px 1fr 120px;align-items:center;gap:14px}
+.cl-name{font-weight:600;color:var(--ink)} .cl-name small{display:block;font-weight:400;color:var(--ink-faint);font-size:11.5px}
+.cl-track{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;height:22px;overflow:hidden}
+.cl-fill{height:100%;border-radius:999px;display:flex;align-items:center;min-width:0}
+.cl-fill.pos{background:var(--pos)} .cl-fill.neg{background:var(--neg)}
+.cl-stats{text-align:right;font-variant-numeric:tabular-nums}
+.cl-stats .pc{font-weight:700;color:var(--ink-strong)}
+.cl-stats .n{color:var(--ink-muted);font-size:12px}
+
+/* ---- Rating distribution (skew) ---- */
+.skewgrid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.hist .bars{display:flex;align-items:flex-end;gap:14px;height:150px}
+.hist .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.hist .bar i{display:block;width:100%;background:var(--accent);border-radius:6px 6px 0 0;min-height:2px}
+.hist .bar i.star5{background:var(--pos)} .hist .bar i.star4{background:var(--accent)}
+.hist .bar i.star3{background:var(--warn)} .hist .bar i.star1{background:var(--neg)}
+.hist .bar .cnt{font-size:12px;font-weight:600;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+.hist .bar .axis{font-size:11.5px;color:var(--ink-faint)}
+.skewcard{background:var(--warn-soft);border:1px solid rgba(184,134,43,.35);border-radius:var(--r-md);padding:18px 20px}
+.skewcard h3{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
+.skewcard p{margin:0;font-size:13.5px;color:var(--ink)}
+.skewcard .big{font-size:20px;font-weight:700;color:var(--ink-strong);margin-top:6px}
+
+/* ---- Wrong reviews ---- */
+.errs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.errcard{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--neg);
+  border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow)}
+.errcard .tag{font-family:var(--font-mono);font-size:11.5px;color:var(--neg);margin-bottom:8px}
+.errcard h3{margin:0 0 4px;font-size:14.5px;color:var(--ink-strong)}
+.errcard .rating{font-size:12px;color:var(--ink-muted);margin-bottom:10px}
+.errcard blockquote{margin:0;color:var(--ink-muted);font-size:13px;line-height:1.5;border-left:2px solid var(--line-strong);
+  padding-left:12px}
+.errcard .fix{margin-top:12px;font-size:12px;color:var(--ink-muted)}
+.errcard .fix b{color:var(--ink)}
+
+/* ---- Insight list ---- */
+.insights{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.insight{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;box-shadow:var(--shadow)}
+.insight h3{margin:0 0 8px;font-size:13.5px;color:var(--ink-strong)}
+.insight p{margin:0;font-size:13.5px;color:var(--ink-muted)}
+.insight.good h3{color:var(--pos)} .insight.bad h3{color:var(--neg)}
+
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
+  color:var(--ink-faint);font-size:12px;font-family:var(--font-mono);display:flex;
+  justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media(max-width:880px){
+  .headline{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .skewgrid,.errs,.insights{grid-template-columns:1fr}
+  .meta{text-align:left} .masthead{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:560px){.kpis{grid-template-columns:1fr}.cl-row{grid-template-columns:90px 1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <div class="kicker">Step 3 &middot; Results Report</div>
+      <h1>Amazon Review Sentiment Model</h1>
+      <div class="sub">Classifying Gift&nbsp;Card reviews as POSITIVE or NEGATIVE from <strong>title + text only</strong>, judged against the star rating.</div>
+    </div>
+    <div class="meta">
+      <div>batch&nbsp;&nbsp;100 reviews &middot; seed&nbsp;42</div>
+      <div>model&nbsp;&nbsp;<b>DeepSeek-V4-Flash-0731</b></div>
+      <div>ground&nbsp;rating&nbsp;≥&nbsp;4&nbsp;=&nbsp;POS &middot; else&nbsp;NEG</div>
+      <button class="recolor" id="themeBtn" type="button">Toggle dark theme</button>
+    </div>
+  </header>
+
+  <!-- Headline -->
+  <div class="headline">
+    <div class="bigstat">
+      <div class="value">98.0%</div>
+      <div class="num">98 / 100 agreed</div>
+      <div class="cap">of predictions matched the rating-derived label on this 100-review batch.</div>
+    </div>
+    <div class="verdict">
+      <h2>Plain-language verdict</h2>
+      <p>
+        This model is <strong>genuinely good, and not just because of luck or the data skew.</strong>
+        Most reviews here are positive &mdash; a lazy guess of &ldquo;POSITIVE&rdquo; for everything would
+        score <span class="rule-glyph">88%</span>. This model scores
+        <strong>98%</strong>, i.e. <strong>+10 points above that naive baseline</strong>, and it gets
+        every genuinely negative review right. Its only slips are two lukewarm 4-star reviews whose
+        prose reads negative.
+      </p>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpis">
+    <div class="kpi pos">
+      <div class="label">Correctly predicted</div>
+      <div class="num">98</div>
+      <div class="hint">98.0% agreement with the rating</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Positive reviews in batch</div>
+      <div class="num">88</div>
+      <div class="hint">skew: most of the data is positive</div>
+    </div>
+    <div class="kpi neg">
+      <div class="label">Negative reviews in batch</div>
+      <div class="num">12</div>
+      <div class="hint">&mdash;</div>
+    </div>
+    <div class="kpi warn">
+      <div class="label">Above majority baseline</div>
+      <div class="num">+10<small> pts</small></div>
+      <div class="hint">88% &rarr; 98% versus always-&ldquo;POSITIVE&rdquo;</div>
+    </div>
+  </div>
+
+  <!-- Confusion matrix -->
+  <section>
+    <div class="sec-head"><h2>Right vs. wrong, by class</h2><span class="n">confusion matrix</span></div>
+    <p class="sec-sub">Rows are the model&rsquo;s job; the aim is a clean diagonal (green). The model never called a negative review positive, and only missed two positives.</p>
+    <div class="cmatrix">
+      <div></div>
+      <div class="cm-label">predicted POSITIVE</div>
+      <div class="cm-label">predicted NEGATIVE</div>
+
+      <div class="cm-rowlab">actually&nbsp;POSITIVE&nbsp;(88)</div>
+      <div class="cm-cell cm-tp"><div class="v">86</div><div class="d">correctly positive</div></div>
+      <div class="cm-cell cm-fn"><div class="v">2</div><div class="d">missed &mdash; the errors</div></div>
+
+      <div class="cm-rowlab">actually&nbsp;NEGATIVE&nbsp;(12)</div>
+      <div class="cm-cell cm-fp"><div class="v">0</div><div class="d">false alarms</div></div>
+      <div class="cm-cell cm-tn"><div class="v">12</div><div class="d">correctly negative</div></div>
+
+      <div class="cm-legend">
+        <span class="l-pos">correct</span>
+        <span class="l-neg">mistake</span>
+        <span>2 mistakes total, both on positive reviews</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Per-class accuracy -->
+  <section>
+    <div class="sec-head"><h2>Accuracy by class</h2><span class="n">per-class</span></div>
+    <p class="sec-sub">The negative class is small (12), so its perfect score is a good sign but a thin basis.</p>
+    <div class="classlines">
+      <div class="cl-row">
+        <div class="cl-name">POSITIVE<small>86 of 86 + 2 errors</small></div>
+        <div class="cl-track"><div class="cl-fill pos" style="width:97.7%"></div></div>
+        <div class="cl-stats"><div class="pc">97.7%</div><div class="n">86 / 88</div></div>
+      </div>
+      <div class="cl-row">
+        <div class="cl-name">NEGATIVE<small></small></div>
+        <div class="cl-track"><div class="cl-fill neg" style="width:100%"></div></div>
+        <div class="cl-stats"><div class="pc">100%</div><div class="n">12 / 12</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skew -->
+  <section>
+    <div class="sec-head"><h2>The skew, shown</h2><span class="n">rating distribution</span></div>
+    <div class="skewgrid">
+      <div class="hist">
+        <div class="bars">
+          <div class="bar"><i class="star5" style="height:80%"></i><span class="cnt">80</span><span class="axis">5&star;</span></div>
+          <div class="bar"><i class="star4" style="height:8%"></i><span class="cnt">8</span><span class="axis">4&star;</span></div>
+          <div class="bar"><i class="star3" style="height:2%"></i><span class="cnt">2</span><span class="axis">3&star;</span></div>
+          <div class="bar"><i class="star1" style="height:10%"></i><span class="cnt">10</span><span class="axis">1&star;</span></div>
+        </div>
+      </div>
+      <div class="skewcard">
+        <h3>Why you can&rsquo;t trust the 98% at face value</h3>
+        <p>This batch is <strong>88% positive</strong>. A model that output &ldquo;POSITIVE&rdquo; on every review,
+        never reading a word, would still score 88%.</p>
+        <div class="big">Naive baseline: 88% &nbsp;&rarr;&nbsp; Model: 98%</div>
+        <p style="margin-top:8px">So the real, honest margin is <strong>+10 points</strong> &mdash; that is what the model actually earns.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wrong reviews -->
+  <section>
+    <div class="sec-head"><h2>The reviews it got wrong</h2><span class="n">2 of 100</span></div>
+    <p class="sec-sub">Both misses are 4-star reviews. A 4-star rating means &ldquo;POSITIVE&rdquo; under our rule, but the model weighed the complaint-heavy prose and said NEGATIVE &mdash; a tone-based call that conflicts with the rating.</p>
+    <div class="errs">
+      <div class="errcard">
+        <div class="tag">WRONG &middot; TRUE: POSITIVE &rarr; PREDICTED: NEGATIVE</div>
+        <h3>&ldquo;Great idea, nice design.&rdquo;</h3>
+        <div class="rating">Rated 4&star;</div>
+        <blockquote>Well, I ordered this card specifically for how the box looked. It was secured in a plastic bag….and whoever packaged it just shoved it in, and the bow was messed up. I had to get my curling iron…</blockquote>
+        <div class="fix"><b>Why it&rsquo;s hard:</b> positive premise in the title, but the body complains about packaging &mdash; the model read the complaint, not the 4-star satisfaction.</div>
+      </div>
+      <div class="errcard">
+        <div class="tag">WRONG &middot; TRUE: POSITIVE &rarr; PREDICTED: NEGATIVE</div>
+        <h3>&ldquo;Watch what you are buying&rdquo;</h3>
+        <div class="rating">Rated 4&star;</div>
+        <blockquote>Product was not what I expected. I wanted to get Ebay cards and not visa debit cards. Lesson learned.</blockquote>
+        <div class="fix"><b>Why it&rsquo;s hard:</b> a mild complaint and a cautionary warning &mdash; reads NEGATIVE on tone even though the star is positive. Genuinely ambiguous.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insights -->
+  <section>
+    <div class="sec-head"><h2>What the evidence says</h2><span class="n">good vs. bad</span></div>
+    <div class="insights">
+      <div class="insight good">
+        <h3>Strong at clear sentiment</h3>
+        <p>Perfect on negative reviews (12/12) and on unambiguous positives. Crisp, obviously-sentiment one-liners (&ldquo;Great gift&rdquo;, &ldquo;Do not buy!&rdquo;) are handled correctly.</p>
+      </div>
+      <div class="insight good">
+        <h3>Never cries wolf on negatives</h3>
+        <p>Zero false positives &mdash; no genuine negative review was called positive. That zero is the strongest signal in the matrix.</p>
+      </div>
+      <div class="insight bad">
+        <h3>Drifts on lukewarm 4-star reviews</h3>
+        <p>Its only 2 errors are 4-star reviews with complaint-y prose. The model judges <em>tone</em>, not the 4/5 rating boundary, so mild-but-satisfied reviews can look negative.</p>
+      </div>
+      <div class="insight bad">
+        <h3>Small negative sample</h3>
+        <p>Only 12 negatives in 100. &ldquo;100%&rdquo; on negatives is encouraging but not statistically settled &mdash; a larger, harder negative set would give real confidence.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Source: Gift_Cards.jsonl.gz &middot; Amazon Reviews 2023 (McAuley Lab)</span>
+    <span>Generated from batch_scores.csv &middot; all figures verbatim from scoring output</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('themeBtn');
+  btn.addEventListener('click',function(){
+    var r=document.documentElement, cur=r.getAttribute('data-theme');
+    var next=cur==='dark'?'light':'dark';
+    r.setAttribute('data-theme',next);
+    btn.textContent = next==='dark'?'Light theme':'Toggle dark theme';
+  });
+})();
+</script>
+</body>
+</html>
