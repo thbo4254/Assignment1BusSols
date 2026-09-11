@@ -184,6 +184,50 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
   .meta{text-align:left} .masthead{flex-direction:column;align-items:flex-start}
 }
 @media(max-width:560px){.kpis{grid-template-columns:1fr}.cl-row{grid-template-columns:90px 1fr 1fr}}
+
+  /* ---- Review explorer (Step 4) ---- */
+  .explore{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+    box-shadow:var(--shadow);overflow:hidden}
+  .explore .toolbar{padding:18px 22px 14px;border-bottom:1px solid var(--line);
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .fbtn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-muted);
+    font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer}
+  .fbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .fbtn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .fbtn.active .cnt{opacity:.8}
+  .fbtn .cnt{font-weight:400;opacity:.7;margin-left:5px;font-variant-numeric:tabular-nums}
+  .livecount{margin-left:auto;font-size:13px;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+  .livecount b{color:var(--ink-strong)}
+  .search{display:flex;gap:6px;align-items:center}
+  .search input{border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);
+    font:inherit;font-size:13px;padding:7px 12px;border-radius:var(--r-sm);width:210px}
+  .search input:focus{outline:none;border-color:var(--accent)}
+  .explore .tablewrap{max-height:480px;overflow:auto}
+  table.rtbl{width:100%;border-collapse:collapse;font-size:13px}
+  .rtbl th{position:sticky;top:0;background:var(--surface-2);color:var(--ink-muted);
+    text-align:left;font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;
+    padding:11px 14px;border-bottom:1px solid var(--line-strong);white-space:nowrap;cursor:pointer;user-select:none}
+  .rtbl th .srt{opacity:.35;margin-left:4px}
+  .rtbl th.sorted .srt{opacity:1;color:var(--accent)}
+  .rtbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  .rtbl tbody tr:hover{background:var(--surface-2)}
+  .rtbl tbody tr.mismatch{background:var(--neg-soft)}
+  .rtbl td.row{font-family:var(--font-mono);color:var(--ink-faint);font-size:12px;width:44px}
+  .rtbl td.stars{white-space:nowrap}
+  .rtbl td.stars .s{color:var(--warn);letter-spacing:1px}
+  .rtbl td.title{font-weight:600;color:var(--ink-strong);max-width:240px}
+  .rtbl td.text{color:var(--ink-muted);max-width:380px;line-height:1.45}
+  .rtbl td.text .more{color:var(--accent);cursor:pointer;font-size:11.5px;white-space:nowrap}
+  .rtbl td.text .more:hover{text-decoration:underline}
+  .rtbl .lbl{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.03em}
+  .lbl.pos{background:var(--pos-soft);color:var(--pos)}
+  .lbl.neg{background:var(--neg-soft);color:var(--neg)}
+  .lbl.nn{color:var(--ink-faint);background:var(--surface-2)}
+  .mismatch .lbl.pos,.mismatch .lbl.neg{box-shadow:0 0 0 1px currentColor}
+  .empty{padding:40px;text-align:center;color:var(--ink-muted);font-size:13px}
+  @media(max-width:760px){.rtbl td.text{max-width:200px}.row{display:none}.livecount{margin-left:0}}
+
 </style>
 </head>
 <body>
@@ -357,7 +401,43 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
     </div>
   </section>
 
-  <footer>
+  
+  <!-- Review explorer -->
+  <section>
+    <div class="sec-head"><h2>Explore every review</h2><span class="n">filterable table</span></div>
+    <p class="sec-sub">Filter the full 100-review batch, or search by text. Click a column header to sort. The live count always reflects only the rows shown.</p>
+    <div class="explore">
+      <div class="toolbar">
+        <div class="filters" id="filters">
+          <button class="fbtn active" data-f="all">All<span class="cnt" data-c="all"></span></button>
+          <button class="fbtn" data-f="ok">Correct<span class="cnt" data-c="ok"></span></button>
+          <button class="fbtn" data-f="miss">Mismatched<span class="cnt" data-c="miss"></span></button>
+          <button class="fbtn" data-f="pos">Pos-only<span class="cnt" data-c="pos"></span></button>
+          <button class="fbtn" data-f="neg">Neg-only<span class="cnt" data-c="neg"></span></button>
+        </div>
+        <div class="livecount">Showing <b id="countShown">0</b> of <span id="countTotal">0</span></div>
+        <div class="search"><input id="search" type="text" placeholder="Search title or text…"></div>
+      </div>
+      <div class="tablewrap">
+        <table class="rtbl">
+          <thead>
+            <tr>
+              <th data-k="row">#<span class="srt">&#9660;</span></th>
+              <th data-k="rating">Rating<span class="srt">&#9660;</span></th>
+              <th>Title</th>
+              <th>Review text</th>
+              <th data-k="pred">Predicted<span class="srt">&#9660;</span></th>
+              <th data-k="true">True<span class="srt">&#9660;</span></th>
+            </tr>
+          </thead>
+          <tbody id="rtbody"></tbody>
+        </table>
+        <div class="empty" id="rtEmpty" style="display:none">No reviews match this filter.</div>
+      </div>
+    </div>
+  </section>
+
+<footer>
     <span>Source: Gift_Cards.jsonl.gz &middot; Amazon Reviews 2023 (McAuley Lab)</span>
     <span>Generated from batch_scores.csv &middot; all figures verbatim from scoring output</span>
   </footer>
@@ -374,5 +454,128 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
   });
 })();
 </script>
+
+<script>
+(function(){
+"use strict";
+var DATA = [{"row": 1, "rating": 4.0, "title": "Great gift", "text": "When you don\u2019t know what to get", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 2, "rating": 5.0, "title": "Got it when it said", "text": "Nice delivery and fast. Hope the mom-to-be has no problems with it\ud83e\udd30 \ud83d\ude45\ud83d\udc86\ud83d\ude4e\ud83d\ude47.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 3, "rating": 1.0, "title": "not happy my 2% credit didn't automatically apply", "text": "had to call customer services, very very annoying", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 4, "rating": 5.0, "title": "Amazon Gift Cards Did All The Work", "text": "No need to guess what anyone wants. Everyone shops at Amazon and you will get it right every time by letting loved ones purchase exactly what they want or need. I was off the shopping hook at the push", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 5, "rating": 5.0, "title": "Helpful", "text": "Great", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 6, "rating": 5.0, "title": "Great", "text": "Pick a game", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 7, "rating": 5.0, "title": "Five Stars", "text": "Fast and easy, thanks", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 8, "rating": 5.0, "title": "Staff loved them", "text": "Great gift everybody loves Amazon", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 9, "rating": 5.0, "title": "An easy way to buy tasty donuts", "text": "I bought this the day after Thanksgiving. It arrived in a few days and worked at my local Krispy Kreme. An easy gift for the donut lover. An easy way to get tasty donuts!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 10, "rating": 5.0, "title": "Beautiful case for your gift card", "text": "Awesome case to put the gift card in.  Don't even  have to wrap it.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 11, "rating": 5.0, "title": "Gift card reviews are weird unless they go wrong", "text": "We bought this for my mom, she used it, no problem.<br /><br />We've had an issue with a recent kind of multiple restaurant card where the restaurants weren't all part of the same ownership group you", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 12, "rating": 5.0, "title": "Perfect way to use odd balances on prepaid cards", "text": "I often use Amazon's Gift Card Balance Reload to finish the remaining balances on any prepaid debit cards I have. Those cards come from many sources these days, such as rebates, promotional offers, an", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 13, "rating": 4.0, "title": "It reloaded", "text": "It reloaded", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 14, "rating": 5.0, "title": "Just like getting free money!", "text": "I will take a $50 gift card for $40 any day!!! Basically $10 for free. Love it.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 15, "rating": 5.0, "title": "Beautiful high-quality packaging, perfect gift for grads!", "text": "It's an Amazon gift card in a high-quality gift box that looks like a graduation cap. It makes an excellent gift!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 16, "rating": 5.0, "title": "Five Stars", "text": "Awsome", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 17, "rating": 5.0, "title": "Love it!", "text": "This is great! I hope Amazon does this every year. I would definitely collect one every year", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 18, "rating": 5.0, "title": "A go to gift card.", "text": "Everyone loves Amazon. An Amazon gift card fits any ocasion and celebration.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 19, "rating": 5.0, "title": "It works and I got some free cash out of it", "text": "It worked fine!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 20, "rating": 5.0, "title": "Five Stars", "text": "What can one say, they are a gift card and it works.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 21, "rating": 4.0, "title": "Easy", "text": "Easy", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 22, "rating": 5.0, "title": "Pretty much perfct", "text": "It's a gift card. It's worth what I paid for it. It has no activation fees or expiration date and it doesn't lose its value if not used. Pretty much perfct, as far as gift cards go.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 23, "rating": 5.0, "title": "Gifted", "text": "It\u2019s a gift card", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 24, "rating": 5.0, "title": "Five Stars", "text": "So far I am a fan of Amazon", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 25, "rating": 5.0, "title": "Amazing Deal", "text": "I got this card as a new customer so it was a great deal.  I put $100 on the card and got $125 to spend!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 26, "rating": 5.0, "title": "Five Stars", "text": "Given as a Christmas present", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 27, "rating": 5.0, "title": "Quick Service Happy with everything.", "text": "Everything was quick and easy to order.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 28, "rating": 5.0, "title": "Five Stars", "text": "Great, simple gift.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 29, "rating": 5.0, "title": "as described", "text": "bought for my mother and came quickly :) would buy again", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 30, "rating": 5.0, "title": "Five Stars", "text": "Nice 20% discount.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 31, "rating": 5.0, "title": "Like", "text": "My daughter loved this as a gift. Came in fast and I had no problems", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 32, "rating": 5.0, "title": "Easy gift when you don't know what to give.", "text": "Christmas gifts,", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 33, "rating": 5.0, "title": "Reloadable gift card", "text": "Easy to load and use.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 34, "rating": 5.0, "title": "Love it", "text": "Incredible", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 35, "rating": 4.0, "title": "Great idea, nice design.", "text": "Well, I ordered this card specifically for how the box looked.  It was secured in a plastic bag....and whoever packaged it just shoved it in, and the bow was messed up.  I had to get my curling iron a", "true": "POSITIVE", "pred": "NEGATIVE", "ok": false}, {"row": 36, "rating": 5.0, "title": "Nice!", "text": "Gave as gifts and loved the presentation!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 37, "rating": 5.0, "title": "Easy and fast", "text": "Easy and fast", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 38, "rating": 5.0, "title": "Amazon", "text": "It's a gift card.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 39, "rating": 5.0, "title": "Five Stars", "text": "Great gift", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 40, "rating": 5.0, "title": "Gift Card", "text": "Everyone loves Amazon gift cards!  Easy to use!  Box is reusable for any small gift!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 41, "rating": 4.0, "title": "It's a gift card", "text": "Just what I wanted", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 42, "rating": 5.0, "title": "Easy to use", "text": "Very convenient", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 43, "rating": 5.0, "title": "Five Stars", "text": "easy to use", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 44, "rating": 5.0, "title": "It was easy to do.", "text": "I liked the ease of doing it.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 45, "rating": 5.0, "title": "great gifts.", "text": "Thank you!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 46, "rating": 5.0, "title": "Convenient Gift Card for Kindle Reader", "text": "Very attractive packaging!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 47, "rating": 5.0, "title": "Five Stars", "text": "Good product!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 48, "rating": 5.0, "title": "Nice box and makes a nice-looking gift.", "text": "Liked it all. So did the 4 recipients of all the boxes I bought.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 49, "rating": 5.0, "title": "Great foe mailing", "text": "Nice n compact", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 50, "rating": 5.0, "title": "Exactly as advertised", "text": "Great", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 51, "rating": 5.0, "title": "A great gift!", "text": "Arrived on time and was as advertised.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 52, "rating": 5.0, "title": "Sometimes I use this as cache money for the gift purchases", "text": "Sometimes I use this as cache money for the gift purchases. Vert seamless to buy it online.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 53, "rating": 5.0, "title": "Five Stars", "text": "It's a gift card? What can I review about that hah.<br />It was delivered fast.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 54, "rating": 5.0, "title": "Five Stars", "text": "reloading is so easily and the money  is applied immediately", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 55, "rating": 5.0, "title": "Perfect for graduation!!!", "text": "Great gift box for gift card!!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 56, "rating": 5.0, "title": "Its a Gift Card", "text": "What can I say about a gift card.  It works, it was exactly what I expected, and I would purchase again.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 57, "rating": 5.0, "title": "So Easy", "text": "I always try to keep money already loaded so I always have money when I want to shop.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 58, "rating": 1.0, "title": "False information", "text": "web page details are inaccurate and misleading", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 59, "rating": 1.0, "title": "Didn\u2019t work", "text": "None of the cards worked in the Starbucks ap or at Starbucks stores", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 60, "rating": 5.0, "title": "Great Idea!", "text": "great idea! feels like money in the bank earning interest.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 61, "rating": 5.0, "title": "Cute Snowflake design.", "text": "Nice Snowflake design so didn't need to wrap it or anything else. Perfect gift box.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 62, "rating": 5.0, "title": "What to give to the person you do not know very well.", "text": "Almost all my friends buy at Amazon. I do too! I always seem to find things I want when I do not have the cash to make a purchase. Amazon gift cards meet my needs and the needs of my friends.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 63, "rating": 5.0, "title": "Five Stars", "text": "Kids loved", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 64, "rating": 5.0, "title": "Great Idea", "text": "Great gift", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 65, "rating": 5.0, "title": "Budget", "text": "I use the reloaded gift card a budgeting tool for myself. Let be honest, I know I'm not the only one with a cart total close to one million lol.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 66, "rating": 1.0, "title": "Be ware!!", "text": "Don\u2019t buy. They activate the cards and them they desactivate it. $600 to trash.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 67, "rating": 5.0, "title": "Nice tin, very appropriate", "text": "I bought these for my nieces, they loved them. Nice design for the tin.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 68, "rating": 4.0, "title": "Nice gift card", "text": "Arrived quickly. Looks nice except the cutout on the back of the tin- you see a barcode not Merry Christmas so the picture is misleading. You could flip the gift card over but then it would look silly", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 69, "rating": 5.0, "title": "Good quality!", "text": "Got what I expected.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 70, "rating": 5.0, "title": "It's a gift certificate", "text": "Easy to use", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 71, "rating": 5.0, "title": "No problems!", "text": "Card worked fine!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 72, "rating": 5.0, "title": "Five Stars", "text": "convenience", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 73, "rating": 1.0, "title": "Nominations", "text": "So incredibly stupid, they sent me two cars they were both different nominations it does not tell you which one is which value. Told you to look up the serial number but she was no serial number anywh", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 74, "rating": 5.0, "title": "Good feature.", "text": "Needed to add to my order balance and this helps reach that order balance immediately.  Good feature.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 75, "rating": 5.0, "title": "Great.", "text": "I used it today and it is accepted. Great.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 76, "rating": 3.0, "title": "Supposed to be ready to use.", "text": "Purchased two of these as a gift for my daughter. Assumed them to be 'ready to use' since there were no instructions to activate, secure a PIN or anything else. Daughter said she could not use them wh", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 77, "rating": 5.0, "title": "It's a gift card in nice packaging with no overhead cost to the consumer", "text": "It's a gift card in nice packaging with no overhead cost to the consumer. Fairly common practice, but a nice touch -- however the box does ruin the surprise!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 78, "rating": 1.0, "title": "I can't figure out how to use it! I ...", "text": "I can't figure out how to use it! I was trying to use it for some Kindle purchases. I hope I can figure it out on my next try.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 79, "rating": 5.0, "title": "Five Stars", "text": "My son liked his gift card.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 80, "rating": 4.0, "title": "Four Stars", "text": "Works as advertised.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 81, "rating": 4.0, "title": "Watch what you are buying", "text": "Product was not what I expected. I wanted to get Ebay cards and not visa debit cards. Lesson learned.", "true": "POSITIVE", "pred": "NEGATIVE", "ok": false}, {"row": 82, "rating": 5.0, "title": "Unique gift", "text": "Perfect Birthday gift and so cute!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 83, "rating": 5.0, "title": "Easy to Order", "text": "This made a good Christmas present for my wife.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 84, "rating": 5.0, "title": "Five Stars", "text": "perfect for a gift card", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 85, "rating": 5.0, "title": "Works great", "text": "Card was bent when it came in but it was acceptable. The card worked perfectly and my sister appreciated it.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 86, "rating": 5.0, "title": "First introduced to this restaurant in Asheville, N. C.", "text": "I gave this one to me!  Like it quite well and am holding it for a special time.  If I get only one of these next holiday, it will be mine.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 87, "rating": 5.0, "title": "Awsome", "text": "Super easy to add to your account!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 88, "rating": 5.0, "title": "Five Stars", "text": "It was easy to do!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 89, "rating": 3.0, "title": "Or if I earned more coins per purchase that would be great as well", "text": "I wish the discount was higher. I would purchase more coins.  Or if I earned more coins per purchase that would be great as well.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 90, "rating": 5.0, "title": "everyone loves gift cards!", "text": "What is there to say.. Game Stop gift cards are awesome! :)", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 91, "rating": 5.0, "title": "Five Stars", "text": "it is really great", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 92, "rating": 5.0, "title": "Make your Benifit from your money!", "text": "It saves few money from my spending, I really like it when I use it.", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 93, "rating": 1.0, "title": "Might be lost", "text": "Note came from Amazon \"might/may be lost\", so big disappointment to my intended recipient; I have asked for refund.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 94, "rating": 1.0, "title": "Gift card compromised!!!", "text": "Bought this gift card from Amazon for my daughter for Christmas! $110 worth of charges magically appeared. I will never buy another gift card from Amazon again. Contacted them and got zero response.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 95, "rating": 5.0, "title": "Five Stars", "text": "It did", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 96, "rating": 5.0, "title": "Five Stars", "text": "perfect", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 97, "rating": 1.0, "title": "Invalid", "text": "Code didn\u2019t work. Didn\u2019t take certain letters in the code for redemption. Lesson learned no longer purchasing gift cards online.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 98, "rating": 1.0, "title": "This card wasn't activated prior to sending it to us.  It won't work", "text": "The card needs to be activated prior to sending it and it wasn't.  We can't redeem the card.", "true": "NEGATIVE", "pred": "NEGATIVE", "ok": true}, {"row": 99, "rating": 5.0, "title": "Gift card", "text": "Gift card", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}, {"row": 100, "rating": 5.0, "title": "\"CONVENIENCE\" SPENDING\"", "text": "I found it very convenient\ud83d\udcb2!", "true": "POSITIVE", "pred": "POSITIVE", "ok": true}];
+var TOTAL = DATA.length;
+function counts(){
+  var o={all:TOTAL,ok:0,miss:0,pos:0,neg:0};
+  DATA.forEach(function(d){
+    if(d.ok){o.ok++;} else {o.miss++;}
+    if(d.true==='POSITIVE'){o.pos++;} else {o.neg++;}
+  });
+  return o;
+}
+var realCounts = counts();
+
+function stars(r){
+  var s='';for(var i=0;i<5;i++){s+= i<r?'&#9733;':'&#9734;';} // filled/empty star
+  return s;
+}
+function esc(t){return String(t==null?'':t)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;');}
+function truncate(t){
+  t=String(t||'');
+  if(t.length<=110){return esc(t);}
+  return '<span class="short">'+esc(t.slice(0,110))+'&hellip;</span>'+
+         '<span class="more" data-full="0">show all</span>';
+}
+function lbl(cls,who){
+  var map={POSITIVE:'pos',NEGATIVE:'neg'};
+  var k=map[cls]||'nn';
+  return '<span class="lbl '+k+'">'+esc(cls||'—')+'</span>'+
+    (who==='mismatch'? '<span class="lbl nn" style="margin-left:4px">mis</span>':'');
+}
+function rowhtml(d){
+  var mis = !d.ok;
+  var pred = d.pred? lbl(d.pred, mis?'mismatch':'') : '<span class="lbl nn">—</span>';
+  return '<tr class="'+(mis?'mismatch':'')+'">'+
+    '<td class="row">'+d.row+'</td>'+
+    '<td class="stars"><span class="s">'+stars(d.rating)+'</span> '+d.rating.toFixed(1)+'</td>'+
+    '<td class="title">'+esc(d.title)+'</td>'+
+    '<td class="text">'+truncate(d.text)+'</td>'+
+    '<td>'+pred+'</td>'+
+    '<td>'+lbl(d.true)+'</td>'+
+    '</tr>';
+}
+
+var curF='all', q='', sortK='row', sortDir=1;
+var tbody=document.getElementById('rtbody');
+var filters=document.getElementById('filters');
+var sh=document.getElementById('countShown');
+var totalEl=document.getElementById('countTotal');
+var emptyEl=document.getElementById('rtEmpty');
+var search=document.getElementById('search');
+
+Object.keys(realCounts).forEach(function(k){
+  var el=document.querySelector('[data-c="'+k+'"]');
+  if(el) el.textContent=realCounts[k];
+});
+totalEl.textContent=TOTAL;
+
+function filtered(){
+  var ql=q.toLowerCase();
+  return DATA.filter(function(d){
+    if(curF==='ok' && !d.ok) return false;
+    if(curF==='miss' && d.ok) return false;
+    if(curF==='pos' && d.true!=='POSITIVE') return false;
+    if(curF==='neg' && d.true!=='NEGATIVE') return false;
+    if(q && (d.title||'').toLowerCase().indexOf(ql)<0 &&
+            (d.text||'').toLowerCase().indexOf(ql)<0) return false;
+    return true;
+  }).sort(function(a,b){
+    var av=a[sortK], bv=b[sortK];
+    if(av<bv) return -1*sortDir; if(av>bv) return 1*sortDir; return 0;
+  });
+}
+
+function draw(){
+  var f=filtered();
+  tbody.innerHTML=f.map(rowhtml).join('');
+  emptyEl.style.display = f.length?'none':'block';
+  sh.textContent=f.length;
+}
+
+filters.addEventListener('click',function(e){
+  var b=e.target.closest('.fbtn'); if(!b) return;
+  Array.prototype.forEach.call(document.querySelectorAll('.fbtn'),function(x){x.classList.remove('active');});
+  b.classList.add('active'); curF=b.getAttribute('data-f'); draw();
+});
+search.addEventListener('input',function(){q=search.value;draw();});
+document.querySelectorAll('.rtbl th[data-k]').forEach(function(th){
+  th.addEventListener('click',function(){
+    var k=th.getAttribute('data-k');
+    if(sortK===k){sortDir*=-1;}else{sortK=k;sortDir=1;}
+    document.querySelectorAll('.rtbl th[data-k]').forEach(function(x){x.classList.remove('s sorted');x.querySelector('.srt').innerHTML='&#9660;';});
+    th.classList.add('sorted');
+    th.querySelector('.srt').innerHTML= sortDir===1?'&#9660;':'&#9650;';
+    draw();
+  });
+});
+tbody.addEventListener('click',function(e){
+  if(e.target.classList.contains('more')){
+    var r=e.target.closest('tr');
+    var cell=r.querySelector('td.text');
+    if(e.target.getAttribute('data-full')==='0'){
+      e.target.setAttribute('data-full','1');
+      // replace short span with full text (we only kept truncated; re-fetch from DATA)
+      var rowNum=parseInt(r.querySelector('.row').textContent,10);
+      var full=DATA.filter(function(d){return d.row===rowNum;})[0].text;
+      cell.innerHTML=esc(full)+' <span class="more" data-full="1">show less</span>';
+      e.target=e.target;
+    } else {
+      var rowNum2=parseInt(r.querySelector('.row').textContent,10);
+      var full2=DATA.filter(function(d){return d.row===rowNum2;})[0].text;
+      cell.innerHTML=truncate(full2);
+    }
+  }
+});
+draw();
+})();
+</script>
+
 </body>
 </html>
