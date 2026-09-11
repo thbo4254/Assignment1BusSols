@@ -45,19 +45,33 @@ verdict, but don't stop there: weigh what the reviewer is actually saying.
 3. A POSITIVE review recommends, praises, or is satisfied with the product or \
 experience. A NEGATIVE review complains, warns against purchase, reports a \
 defective/failing product, or expresses clear dissatisfaction.
-4. Classify as NEUTRAL only when the review is genuinely neither clearly \
-positive nor clearly negative — e.g. a purely factual note, a balanced mixed \
-verdict (some good, some bad, with no dominant direction), or an indifferent \
-comment. Do NOT default to NEUTRAL for a review that is simply mild; mildly \
-satisfied reviews are POSITIVE, mildly frustrated ones are NEGATIVE.
-5. The review is about the *reviewer's experience*, not a third party's. A \
+4. Classify as NEUTRAL when the review is neither strongly positive nor \
+strongly negative, including: a purely factual or indifferent comment, a \
+balanced review (clear pros AND cons with no dominant direction), a lukewarm \
+verdict with a minor reservation, or mild disappointment expressed without \
+real anger or recommendation against.
+5. IMPORTANT — avoid the extremes bias: do NOT default to NEGATIVE for reviews \
+that merely express a mild reservation, a small complaint, an average \
+experience, or partial dissatisfaction. Do NOT default to POSITIVE for lukewarm \
+reviews that simply praise packaging or sentiment while noting a problem. NEUTRAL \
+is a fully legitimate and common answer — when a review is genuinely in the \
+middle (some good, some bad, or a mild "it's okay"), prefer NEUTRAL.
+6. The review is about the *reviewer's experience*, not a third party's. A \
 review that merely describes someone else being happy is still judged by its \
 own tone and content.
-6. Edge cases — handle these as follows:
+7. Edge cases — handle these as follows:
    - Conflicting title and text: the body text generally carries more weight \
 than the title, but judge the review as a whole and pick the dominant sentiment.
-   - Terse reviews ("Great!", "Do not buy!!"): give clear emotional one-liners \
-their plain meaning.
+   - Terse reviews: a single bare strong word like "GREAT" or "Do not buy" is \
+POSITIVE or NEGATIVE; a terse neutral like "It's ok" or "As usual" is NEUTRAL.
+   - Fixable/partial problems with an otherwise fine review ("would be 5 stars \
+but for a minor issue", "worked but could be simpler") are NEUTRAL, not NEGATIVE.
+
+To calibrate, consider these real 3-star reviews (all are NEUTRAL):
+   - "works but could be simpler to use"            -> NEUTRAL
+   - "It's a pain to figure out, but after that it works" -> NEUTRAL
+   - "Nice presentation except it arrived folded incorrectly" -> NEUTRAL
+   - "Would be 5 stars except for the activation fee, otherwise fine" -> NEUTRAL
 
 Respond with ONLY a single JSON object in exactly this format, and nothing else.
 The "label" is the sentiment verdict (one of POSITIVE, NEUTRAL, NEGATIVE); the \
