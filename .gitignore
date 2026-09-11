@@ -27,3 +27,6 @@ batch_samples.txt
 step6_scores.csv
 step6_sample.txt
 step6_emotion.csv
+step6_tuned_scores.csv
+step6_tuned_sample.txt
+step5_emotion.csv
