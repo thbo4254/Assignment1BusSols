@@ -23,7 +23,8 @@ from typing import Literal
 
 import openai
 
-Label = Literal["POSITIVE", "NEGATIVE"]
+Label = Literal["POSITIVE", "NEUTRAL", "NEGATIVE"]
+LABELS: list[str] = ["POSITIVE", "NEUTRAL", "NEGATIVE"]
 
 # ---------------------------------------------------------------------------
 # Prompt
@@ -32,7 +33,7 @@ Label = Literal["POSITIVE", "NEGATIVE"]
 SYSTEM_PROMPT = """\
 You are an expert Amazon-review sentiment analyst. You will be given a product \
 review consisting of a title and a body. Your job is to classify the overall \
-sentiment of the review as either POSITIVE or NEGATIVE.
+sentiment of the review as POSITIVE, NEUTRAL, or NEGATIVE.
 
 Important rules:
 1. Judge ONLY the title and body text supplied to you. Do NOT invent or assume \
@@ -44,25 +45,26 @@ verdict, but don't stop there: weigh what the reviewer is actually saying.
 3. A POSITIVE review recommends, praises, or is satisfied with the product or \
 experience. A NEGATIVE review complains, warns against purchase, reports a \
 defective/failing product, or expresses clear dissatisfaction.
-4. The review is about the *reviewer's experience*, not a third party's. A \
+4. Classify as NEUTRAL only when the review is genuinely neither clearly \
+positive nor clearly negative — e.g. a purely factual note, a balanced mixed \
+verdict (some good, some bad, with no dominant direction), or an indifferent \
+comment. Do NOT default to NEUTRAL for a review that is simply mild; mildly \
+satisfied reviews are POSITIVE, mildly frustrated ones are NEGATIVE.
+5. The review is about the *reviewer's experience*, not a third party's. A \
 review that merely describes someone else being happy is still judged by its \
 own tone and content.
-5. Edge cases — handle these as follows:
+6. Edge cases — handle these as follows:
    - Conflicting title and text: the body text generally carries more weight \
 than the title, but judge the review as a whole and pick the dominant sentiment.
    - Terse reviews ("Great!", "Do not buy!!"): give clear emotional one-liners \
 their plain meaning.
-   - Angry but ultimately approving reviews: if the buyer is satisfied overall, \
-classify POSITIVE even if the tone is gruff; anger about the product or a failed \
-purchase is NEGATIVE.
-   - Neutral / mixed / undecided reviews MUST still be resolved to POSITIVE or \
-NEGATIVE — there is no third option, so lean on the dominant directional signal.
 
 Respond with ONLY a single JSON object in exactly this format, and nothing else.
-The "label" is the sentiment verdict; the "emotion" is the single primary emotion
-you detect most strongly in the review, chosen from exactly this set:
+The "label" is the sentiment verdict (one of POSITIVE, NEUTRAL, NEGATIVE); the \
+"emotion" is the single primary emotion you detect most strongly in the review, \
+chosen from exactly this set:
 anger, anticipation, disgust, fear, joy, sadness, surprise, trust.
-{"label": "POSITIVE", "emotion": "joy"}   or   {"label": "NEGATIVE", "emotion": "fear"}
+{"label": "POSITIVE", "emotion": "joy"}   or   {"label": "NEUTRAL", "emotion": "anticipation"}
 
 Always include both keys, even if the emotion is weak — pick the strongest of the
 eight. If truly undecided, fall back to "trust" for positive or "fear" for negative."""
@@ -86,13 +88,13 @@ def build_user_prompt(title: str | None, text: str | None) -> str:
     return (
         "Classify the sentiment of the following Amazon review and detect its "
         "primary emotion. Consider the emotional tone of both the title and the "
-        "body, then decide the overall sentiment (POSITIVE or NEGATIVE) and the "
-        "single strongest emotion chosen from: anger, anticipation, disgust, "
-        "fear, joy, sadness, surprise, trust.\n\n"
+        "body, then decide the overall sentiment (POSITIVE, NEUTRAL, or "
+        "NEGATIVE) and the single strongest emotion chosen from: anger, "
+        "anticipation, disgust, fear, joy, sadness, surprise, trust.\n\n"
         f"{review_block}\n\n"
         'Reply with a single JSON object, e.g. {"label": "POSITIVE", '
-        '"emotion": "joy"} or {"label": "NEGATIVE", "emotion": "fear"} — '
-        "include BOTH keys."
+        '"emotion": "joy"} or {"label": "NEUTRAL", "emotion": "anticipation"} '
+        'or {"label": "NEGATIVE", "emotion": "fear"} — include BOTH keys.'
     )
 
 
@@ -116,7 +118,7 @@ MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 # Prediction + parsing
 # ---------------------------------------------------------------------------
 
-_LABEL_RE = re.compile(r'"label"\s*:\s*"?(POSITIVE|NEGATIVE)"?', re.IGNORECASE)
+_LABEL_RE = re.compile(r'"label"\s*:\s*"?(POSITIVE|NEUTRAL|NEGATIVE)"?', re.IGNORECASE)
 _EMOTION_RE = re.compile(r'"emotion"\s*:\s*"([a-zA-Z]+)"')
 EMOTIONS = ["anger", "anticipation", "disgust", "fear", "joy", "sadness",
             "surprise", "trust"]
@@ -157,17 +159,17 @@ def parse_emotion(raw: str) -> str:
 
 
 def parse_label(raw: str) -> Label:
-    """Programmatically read POSITIVE/NEGATIVE out of a model reply."""
+    """Programmatically read POSITIVE/NEUTRAL/NEGATIVE out of a model reply."""
     raw = raw.strip()
     # Prefer an explicit JSON label.
     m = _LABEL_RE.search(raw)
     if m:
         return m.group(1).upper()
     # Fallback: bare token anywhere in the reply.
-    tokens = re.findall(r"\b(POSITIVE|NEGATIVE)\b", raw, re.IGNORECASE)
+    tokens = re.findall(r"\b(POSITIVE|NEUTRAL|NEGATIVE)\b", raw, re.IGNORECASE)
     if tokens:
         return tokens[-1].upper()
-    raise ValueError(f"Could not parse a POSITIVE/NEGATIVE label from model reply: {raw!r}")
+    raise ValueError(f"Could not parse a POSITIVE/NEUTRAL/NEGATIVE label from model reply: {raw!r}")
 
 
 # ---------------------------------------------------------------------------
