@@ -104,6 +104,42 @@ section{margin-bottom:38px}
 .callout.crit{background:var(--neg-soft);border-left:3px solid var(--neg)}
 .callout.crit h3{color:var(--neg)}
 
+/* ===== Step 7: descriptive visualization layer ===== */
+.descgrid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:26px}
+.descpanel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px 24px}
+.descpanel h3{margin:0 0 4px;font-size:14px;color:var(--ink-strong)}
+.descpanel .sub{color:var(--ink-muted);font-size:12.5px;margin:0 0 16px}
+.desc-lbl{font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:16px 0 6px}
+.starhist{display:flex;align-items:flex-end;gap:18px;height:150px}
+.starhist .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.starhist .bar i{display:block;width:100%;background:var(--accent);border-radius:6px 6px 0 0;min-height:3px}
+.starhist .bar .st{font-size:13px;color:var(--warn);letter-spacing:.5px}
+.starhist .bar .cnt{font-size:12px;color:var(--ink-muted);font-weight:600;font-variant-numeric:tabular-nums}
+.starhist .bar .s0{color:var(--ink-faint)}
+.tvp .row{display:grid;grid-template-columns:76px 1fr auto 1fr 44px;gap:10px;align-items:center;margin-bottom:16px}
+.tvp .row .name{font-weight:700;color:var(--ink-strong);font-size:13px}
+.tvp .row .axislab{font-size:10.5px;color:var(--ink-faint);text-align:center}
+.tvp .track{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;height:18px;overflow:hidden}
+.tvp .track .fill{height:100%;border-radius:999px}
+.tvp .fill.true-pos{background:var(--pos)} .tvp .fill.true-neu{background:var(--neu)} .tvp .fill.true-neg{background:var(--neg)}
+.tvp .track.pred{opacity:.55}
+.tvp .num{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--ink-muted);text-align:right}
+.tvp .num b{color:var(--ink-strong);font-size:14px}
+.tvp legend{display:flex;gap:18px;font-size:11.5px;color:var(--ink-muted);margin-top:6px}
+.tvp legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:0}
+.tvp legend .l-t:before{background:var(--accent)}
+.tvp legend .l-p:before{background:var(--ink-muted);opacity:.55}
+.recall{display:flex;flex-direction:column;gap:14px}
+.recall .r{display:grid;grid-template-columns:120px 1fr 90px;align-items:center;gap:12px}
+.recall .r .name{font-weight:600;color:var(--ink);font-size:13px}
+.recall .stack{display:flex;height:20px;border-radius:6px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
+.recall .stack .ok{background:var(--pos)}
+.recall .stack .bad{background:var(--neg)}
+.recall .stack.neu-bad .bad{background:var(--neu)}
+.recall .meta{font-size:11.5px;color:var(--ink-muted);text-align:right;font-variant-numeric:tabular-nums}
+.recall .meta b{color:var(--ink-strong)}
+@media(max-width:880px){.descgrid{grid-template-columns:1fr}.tvp .row{grid-template-columns:60px 1fr 34px}}
+
 /* comparison table */
 .cmprec{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:6px}
 .cmp{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow)}
@@ -248,6 +284,50 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
       <div class="cl-row"><div class="cl-name">POSITIVE<small>47 correct &middot; 3 miss</small></div><div class="cl-track"><div class="cl-fill pos" style="width:94%"></div></div><div class="cl-stats"><div class="pc">94%</div><div class="n">47 / 50</div></div></div>
       <div class="cl-row"><div class="cl-name">NEUTRAL<small>9 correct &middot; 41 miss</small></div><div class="cl-track"><div class="cl-fill neu" style="width:18%"></div></div><div class="cl-stats"><div class="pc">18%</div><div class="n">9 / 50</div></div></div>
       <div class="cl-row"><div class="cl-name">NEGATIVE<small>49 correct &middot; 1 miss</small></div><div class="cl-track"><div class="cl-fill neg" style="width:98%"></div></div><div class="cl-stats"><div class="pc">98%</div><div class="n">49 / 50</div></div></div>
+    </div>
+  </section>
+
+  <!-- Desc      -- The descriptive layer (Step 7) -->
+  <section>
+    <div class="sec-head"><h2>Descriptive view: where it succeeds and fails</h2><span class="n">at a glance</span></div>
+    <p class="sec-sub">Three read-only pictures of the balanced sample. Everything is on the page — no drilling required — so a reader can see the model's success and its failures without interacting.</p>
+    <div class="descgrid">
+      <!-- Star distribution -->
+      <div class="descpanel">
+        <h3>Rating distribution (balanced sample)</h3>
+        <p class="sub">Each class contributes ~50 reviews. Note: this seed drew no 4-star reviews — only 5, 3, 2, and 1.</p>
+        <div class="starhist">
+          <div class="bar"><i style="height:100%"></i><span class="cnt">50</span><span class="st">&#9733;&#9733;&#9733;&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:3px"></i><span class="cnt s0">0</span><span class="st">&#9733;&#9733;&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:100%"></i><span class="cnt">50</span><span class="st">&#9733;&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:10%"></i><span class="cnt">5</span><span class="st">&#9733;&#9733;</span></div>
+          <div class="bar"><i style="height:90%"></i><span class="cnt">45</span><span class="st">&#9733;</span></div>
+        </div>
+        <div class="desc-lbl">Read: the sample is balanced across classes, so any score difference is real, not an artifact of size.</div>
+      </div>
+
+      <!-- True vs predicted -->
+      <div class="descpanel tvp">
+        <h3>Correct answer vs. model prediction, by class</h3>
+        <p class="sub">Both bars share one axis (max&nbsp;=&nbsp;82). Solid = truly in the class; faded = how many the model <em>called</em> that class. A gap between them is over- or under-prediction.</p>
+        <div class="row"><span class="name">POSITIVE</span><div class="track"><div class="fill true-pos" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-pos" style="width:68%"></div></div><span class="num"><b>56</b></span></div>
+        <div class="row"><span class="name">NEUTRAL</span><div class="track"><div class="fill true-neu" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neu" style="width:15%"></div></div><span class="num"><b>12</b></span></div>
+        <div class="row"><span class="name">NEGATIVE</span><div class="track"><div class="fill true-neg" style="width:61%"></div></div><span class="num"><b>50</b></span><div class="track pred"><div class="fill true-neg" style="width:100%"></div></div><span class="num"><b>82</b></span></div>
+        <legend><span class="l-t">true (correct answer)</span><span class="l-p">predicted</span></legend>
+        <div class="desc-lbl">Read: the model says "NEGATIVE" 82 times but only 50 are truly negative — and it says "NEUTRAL" 12 times where 50 are actually neutral. The failures are systematic, not random.</div>
+      </div>
+    </div>
+
+    <!-- How often each class was answered right -->
+    <div class="descpanel">
+      <h3>How often each class was answered right</h3>
+      <p class="sub">Correct = green. Wrong = red (on NEUTRAL, the wrong segment is amber because most errors fell into the balanced middle). A longer green bar is a stronger class.</p>
+      <div class="recall">
+        <div class="r"><span class="name">POSITIVE</span><div class="stack"><div class="ok" style="width:94%"></div><div class="bad" style="width:6%"></div></div><div class="meta"><b>94%</b> &middot; 47/50</div></div>
+        <div class="r nneu"><span class="name">NEUTRAL</span><div class="stack"><div class="ok" style="width:18%"></div><div class="bad" style="width:82%"></div></div><div class="meta"><b>18%</b> &middot; 9/50</div></div>
+        <div class="r"><span class="name">NEGATIVE</span><div class="stack"><div class="ok" style="width:98%"></div><div class="bad" style="width:2%"></div></div><div class="meta"><b>98%</b> &middot; 49/50</div></div>
+      </div>
+      <div class="desc-lbl">Read: the model is near-perfect at the two extremes and poor in the middle — its one genuine weakness is the NEUTRAL class.</div>
     </div>
   </section>
 
